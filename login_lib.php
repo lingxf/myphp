@@ -59,24 +59,24 @@ function show_register($page='login_lib.php',$readonly = 'readonly')
 //			<input type=\"submit\" name=\"register\" onclick=\"javascript:getElementById('id_url').value = window.location.href\" value=\"Register\" />
 }
 
-function show_reset_password($user)
+function show_reset_password($user, $page='login_lib.php')
 {
-	print("<form enctype=\"multipart/form-data\" action=\"login_lib.php\" method=\"POST\">
+	print("<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
 			ID: <input name=\"user\" value=\"$user\" /><br>
 			<input id='id_url' name=\"url\" type='hidden' value=\"\" />
 			Password:&nbsp;&nbsp;&nbsp;   <input name=\"password1\" type=\"password\"/><br>
 			Password Again:&nbsp;&nbsp;&nbsp;   <input name=\"password2\" type=\"password\"/><br>
-			<input type=\"submit\" name=\"reset_password\" onclick=\"javascript:getElementById('id_url').value = window.location.href\" value=\"Reset\" />
+			<input type=\"submit\" name=\"reset_password\" onclick=\"javascript:getElementById('id_url').value = \"http://\" + window.location.host+window.location.pathname\" value=\"Reset\" />
 			</form> ");
 }
 
-function show_forget()
+function show_forget($page='login_lib.php')
 {
-	print("<form enctype=\"multipart/form-data\" action=\"login_lib.php\" method=\"POST\">
+	print("<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
 			ID: <input name=\"user\" value=\"\" /><br>
 			Email: <input name=\"email\" value=\"\" /><br>
 			<input id='id_url' name=\"url\" type='hidden' value=\"\" />
-			<input type=\"submit\" name=\"forget\" onclick=\"javascript:getElementById('id_url').value = window.location.href\" value=\"Reset Password\" />
+			<input type=\"submit\" name=\"forget\" onclick=\"javascript:getElementById('id_url').value =  'http://' + window.location.host+window.location.pathname\" value=\"Reset Password\" />
 			</form> ");
 }
 
@@ -84,23 +84,30 @@ function handle_forget()
 {
 	if(isset($_POST['email']))
 		$email = $_POST['email'];
+	if(isset($_POST['user']))
+		$user = $_POST['user'];
 	$url = $_POST['url'];
+//	$mail_url = get_cur_root()."/$url";
+	$mail_url = $url;
 	
 	$sql="SELECT * FROM user.user WHERE email = '$email'";
 	$res=read_mysql_query($sql);
-	$row=mysql_fetch_array($res);
-	if(!$row){
-		print("$email is not found!<br>");
-		exit();
+	while($row=mysql_fetch_array($res)){
+		$sid = $row['sid'];
+		$suser = $row['user_id'];
+		$sid = mt_rand();
+		if($user != $suser)
+			continue;
+		$sql="update user.user set sid=$sid WHERE email = '$email'";
+		update_mysql_query($sql);
+		$message = "Please click <a href=$mail_url?user=$user&reset=$sid>here</a> to reset your password";
+		mail_html($email, '', "$user reset mail", $message);
+		print("mail to $email to reset password, please click link in the email");
+		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",3000);</script>");
+		return;
 	}
-	$sid = $row['sid'];
-	$user = $row['user_id'];
-	$sid = mt_rand();
-	$sql="update user.user set sid=$sid WHERE email = '$email'";
-	update_mysql_query($sql);
-	$message = "Please click <a href=$url?user=$user&reset=$sid>here</a> to reset your password";
-	mail_html($email, '', "$user reset mail", $message);
-	print("mail to $email to reset password, please click link in the email");
+	print("$email is not found!<br>");
+	exit();
 }
 
 function home_link($url="/")
@@ -186,11 +193,12 @@ if($action == 'login')
 }else if(isset($_GET['reset'])) {
 	$sid= $_GET['reset'];
 	$user = $_GET['user'];
+	$url = isset($_GET['url'])?$_GET['url']:$home_page;
 	$sql = "select * from user.user where user_id = '$user' and sid = $sid";
 	$res = read_mysql_query($sql);
 	if(mysql_fetch_array($res)){
-		print("please reset password\n");
-		show_reset_password($user);
+		print("please reset password $url\n");
+		show_reset_password($user, $url);
 	}else
 		print("does not found user $user");
 	exit();
@@ -223,16 +231,20 @@ if($action == 'login')
 			print("update new password sucessful");
 		else
 			print("update password sucessful");
+		print $url;
+		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",2000);</script>");
 	}else{
 		print("password miss match<br>");
-		show_reset_password();
+		show_reset_password($user, $url);
 	}
 	exit();
 }else if(isset($_POST['show_forget'])) {
-	show_forget();
+	$url = isset($_GET['url'])?$_GET['url']:$home_page;
+	show_forget($url);
 	exit();
 }else if(isset($_POST['show_register'])) {
-	show_register();
+	$url = isset($_GET['url'])?$_GET['url']:$home_page;
+	show_register($url);
 	exit();
 }else if(isset($_POST['forget'])) {
 	handle_forget();
@@ -275,6 +287,9 @@ if($action == 'login')
 			print "mail to $email for activate, please click the link in the mail<br>";
 			print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",1000);</script>");
 		}
+	}else{
+		print("2 Password not match!");
+		show_register($url);
 	}
 	exit();
 }
