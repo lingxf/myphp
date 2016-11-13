@@ -51,7 +51,7 @@ function print_tditem($text, $width='', $color='', $background='', $script='')
 }
 
 
-function print_table_head($table_name='')
+function print_table_head($table_name='', $tr_width=800, $background=0xffffff)
 {
 	$table_head = "<table id='$table_name' width=600 class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 style='width:$tr_width.0pt;background:$background;margin-left:20.5pt;border-collapse:collapse'>";
 	print($table_head);
