@@ -60,6 +60,10 @@ function update_mysql_query2($sql)
 	mysql_query("set names 'utf8'");//.. 
 }
 
+function delay_back($url, $msec=1000)
+{
+	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",$msec);</script>");
+}
 
 function mail_html($to, $cc, $subject, $message)
 {
