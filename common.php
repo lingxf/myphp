@@ -93,7 +93,7 @@ function visit_record($table, $ver='')
 {
 	$ip = get_client_ip();
 	if($ver != '')
-		$ip = "$ip:$ver";
+		$ip = "$ver:$ip";
 	$sql = "insert into $table set `ip` = '$ip', `ver` = '$ver', `times` = 1 on duplicate key update `times` = `times` + 1";
 	$res = mysql_query($sql) or die("Invalid update query:" . $sql . mysql_error());
 }
