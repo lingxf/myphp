@@ -59,7 +59,7 @@ function print_table_head($table_name='', $tr_width=800, $background=0xffffff)
 
 function print_sql_table_head($id, $width, $field_name, $field_width)
 {
-    print("<table id='$id' class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
+    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
     print("<tr style='height:33.0pt'>");
 
 	//$table = mysql_field_table($result, $i);
