@@ -66,7 +66,7 @@ function print_sql_table_head($id, $width, $field_name, $field_width)
 	$wn = count($field_width);
 	$i = 0;
 	foreach($field_name as $field){
-		if($i < $wn){
+		if($i < $wn && $field_width[$i] != 0){
 			$width = $field_width[$i];
 			$attr="width=$width";
 		}else
@@ -82,7 +82,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 	$ret=mysql_select_db($db);
 
 	$result = read_mysql_query($sql);
-	$columns = count($field_width);
+	$columns = count($field_name);
 	if( $columns == 0){
 		for ($i = 0; $i < mysql_num_fields($result); ++$i) {
 			$field = mysql_field_name($result, $i);
@@ -90,7 +90,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		}
 	}
 	$sum = array();
-	print_sql_table_head($id, $width, $field_name, $width);
+	print_sql_table_head($id, $width, $field_name, $field_width);
 	$fields_num = mysql_num_fields($result);
 	while($row=mysql_fetch_array($result)){
         print("<tr style='height:33.0pt'>");
