@@ -1,5 +1,17 @@
 <?php
 include_once 'debug.php';
+function dprintf($format, $a='', $b='', $c='', $d='', $e='', $f='')
+{
+	global $debug;
+	if($debug == 1)
+		printf($format, $a, $b, $c, $d, $e, $f);
+}
+function dprint($format)
+{
+	global $debug;
+	if($debug == 1)
+		print($format);
+}
 function get_client_ip(){
 	if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown"))
 		$ip = getenv("HTTP_CLIENT_IP");
@@ -96,6 +108,15 @@ function visit_record($table, $ver='')
 		$ip = "$ver:$ip";
 	$sql = "insert into $table set `ip` = '$ip', `ver` = '$ver', `times` = 1 on duplicate key update `times` = `times` + 1";
 	$res = mysql_query($sql) or die("Invalid update query:" . $sql . mysql_error());
+}
+
+function get_persist_var($name, $default)
+{
+	$var=isset($_SESSION[$name])?$_SESSION[$name]:$default;
+	$var=isset($_GET[$name])?$_GET[$name]:$var;
+	$var=isset($_POST[$name])?$_POST[$name]:$var;
+	$_SESSION[$name] = $var;
+	return $var;
 }
 
 ?>

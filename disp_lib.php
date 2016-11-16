@@ -16,6 +16,16 @@ function print_td($text, $width='', $color='', $background='', $script='')
 	print $td;
 }
 
+function print_th($width1, $width2, $name){
+	print("<td width=$width1 valign=top style='width:$width2 pt;" . 
+		"border-top:windowtext 1.5pt;border-left:windowtext 1.5pt;" . 
+		"border-bottom:silver 1.0pt;border-right:silver 1.0pt;border-style:solid;" .
+		"background:#CCFFFF;padding:0cm 5.4pt 0cm 5.4pt;height:33.0pt'>" .
+		"<p class=MsoNormal align=center style='text-align:center'>" .
+		"<b><span style='font-size:8.0pt;font-family:\"Arial\",\"sans-serif\";color:black'>" .
+		"$name<o:p></o:p></span></b></p></td>");
+}
+
 function print_tdlist($tdlist)
 {
 	foreach($tdlist as $tdc)
@@ -97,7 +107,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
 			$value = $row[$i];
-			$sum[$field] += $value;
+			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
 				$value = call_user_func($callback, $field, $value);
 			print("<td>$value</td>"); 
@@ -119,6 +129,104 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		print("<th>$tt</th>"); 
 	}
     print("</tr>");
+	print("</table>");
+}
+
+function print_table_head_case($id, $width, $field_name, $field_width, $callback='')
+{
+    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=1 width=1384 style='width:$width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
+    print("<tr style='height:33.0pt'>");
+
+	//$table = mysql_field_table($result, $i);
+	$wn = count($field_width);
+	$i = 0;
+	$value = true;
+	if($callback != '')
+		$field_name = call_user_func($callback, $field_name, '', 0);
+	foreach($field_name as $field){
+		if($i < $wn && $field_width[$i] != 0){
+			$width = $field_width[$i];
+		}else
+			$width = '';
+		if($value != false)
+			print_th($width, $width, $field); 
+		$i++;
+	}
+    print("</tr>");
+}
+
+function print_td_case($value, $width, $background='white', $color='black', $script='', $span=true){
+
+	if($width != '')
+		$wstr = "width:$width"."pt;";
+	else
+		$wstr = '';
+    $td = "<td align='left' style='" .$wstr."border-top:none;border-left:solid windowtext 1.5pt;" .
+		"border-bottom:solid silver 1.0pt;border-right:solid silver 1.0pt;" .
+		"background:$background;color:$color;" .
+		"padding:0cm 5.4pt 0cm 5.4pt;height:33.0pt'i $script>";
+	if($column != 'Action'){
+		$td .= "<p class=MsoNormal align=left style='text-align:left'>";
+		$td .= "<span style='font-size:8.0pt;font-family:\"Arial\",\"sans-serif\";color:$color'>"; 
+	}
+	$td .= "$value";
+	if($span)
+		$td .= "<o:p></o:p></span></p>";
+	$td .= "</td>";
+	print $td;
+}
+
+
+function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback_row='', $callback='', $clone)
+{
+
+	$bkcolor = array('#B8CCE4', '#DCE6F1');
+	$ret=mysql_select_db($db);
+
+	$result = read_mysql_query($sql);
+	$columns = count($field_name);
+	if( $columns == 0){
+		for ($i = 0; $i < mysql_num_fields($result); ++$i) {
+			$field = mysql_field_name($result, $i);
+			$field_name[] = $field;
+		}
+	}
+	$sum = array();
+	print_table_head_case($id, $width, $field_name, $field_width, $callback_row);
+	$fields_num = mysql_num_fields($result);
+	$count = 0;
+	$fcline = 'black';
+	while($row=mysql_fetch_array($result)){
+        print("<tr style='height:33.0pt'>");
+		$bkline = $bkcolor[$count % 2 ];
+		if($callback_row != ''){
+			$color = call_user_func($callback_row, $field_name, $row, 1);
+			$bkline = $color[0];
+			$fcline = $color[1];
+		}
+		if($callback_row != '')
+			$rowp = call_user_func($callback_row, $field_name, $row, 3);
+		else{
+			foreach($field_name as $field){
+				$rowp[$field] = $row[$field];
+			}
+		}
+		foreach($rowp as $field => $value){
+			$bk = $bkline;
+			$fc = $fcline;
+			if($callback != ''){
+				$rback = call_user_func($callback, $field, $value);
+				if($rback){
+					$bk = $rback[0];
+					$fc = $rback[1];
+					$value = $rback[2];
+				}
+			}
+			print_td_case($value, '', $bk, $fc); 
+		}
+		print("</tr>");
+		$count++;
+	}
 	print("</table>");
 }
 
