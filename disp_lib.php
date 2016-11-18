@@ -87,7 +87,7 @@ function print_sql_table_head($id, $width, $field_name, $field_width)
     print("</tr>");
 }
 
-function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='')
+function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='', $format=0)
 {
 	$ret=mysql_select_db($db);
 
@@ -100,6 +100,11 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		}
 	}
 	$sum = array();
+	if($format == 1){
+		$rows = mysql_num_rows($result);
+		print("Total:$rows");
+	}
+
 	print_sql_table_head($id, $width, $field_name, $field_width);
 	$fields_num = mysql_num_fields($result);
 	while($row=mysql_fetch_array($result)){
@@ -114,21 +119,23 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		}
 		print("</tr>");
 	}
-    print("<tr style='height:33.0pt'>");
 	if($callback != '')
 		$sum = call_user_func($callback, 'sum', $sum);
-	for ($i = 0; $i < $fields_num; ++$i) {
-		$field = mysql_field_name($result, $i);
-		$tt = $sum[$field];
-		if($i == 0){
-			print("<th>Total</th>"); 
-			continue;
+	if($format == 0){
+		print("<tr style='height:33.0pt'>");
+		for ($i = 0; $i < $fields_num; ++$i) {
+			$field = mysql_field_name($result, $i);
+			$tt = $sum[$field];
+			if($i == 0){
+				print("<th>Total</th>"); 
+				continue;
+			}
+			if($tt == 0)
+				$tt = "";
+			print("<th>$tt</th>"); 
 		}
-		if($tt == 0)
-			$tt = "";
-		print("<th>$tt</th>"); 
+		print("</tr>");
 	}
-    print("</tr>");
 	print("</table>");
 }
 
