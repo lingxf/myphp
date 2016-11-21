@@ -8,7 +8,7 @@ function get_all_subordinate($uid)
 	$ucond = "supervisor = '$uid'";
 	$acond = " 0  ";
 	while(true){
-		$sql = " select * from user.user where $ucond";
+		$sql = " select * from user.user where supervisor != user_id and $ucond";
 		$res = read_mysql_query($sql);
 		$ucond = " 0 ";
 		$nomore = true;
