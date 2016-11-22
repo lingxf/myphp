@@ -114,7 +114,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$value = $row[$i];
 			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
-				$value = call_user_func($callback, $field, $value);
+				$value = call_user_func($callback, $field, $value, $row);
 			print("<td>$value</td>"); 
 		}
 		print("</tr>");
