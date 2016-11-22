@@ -267,6 +267,44 @@ function update_next_pa_id($id1, $id2, $value){
 	return false;
 }
 
+function get_cond_by_author(&$author, $scope)
+{
+		$cond = '';
+		if($scope == 1){
+			$team = get_my_team($author);
+			if($team != '')
+				$author = "$team";
+		}
+		if($author != ''){
+			$authors = explode(',', $author);
+			$cond = " 0 ";
+			foreach($authors as $au){
+				if($scope == 0){
+					$cond .= " or author = '$au' ";
+				}else if($scope == 1 || $scope == 2){
+					$cond .= " or author = '$au' or ";
+					$cond .= get_all_subordinate($au);
+				}
+			}
+		}
+		return $cond;
+}
 
+function show_myteam_menu($login_id, $action)
+{
+	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=2&author=\";' value='All'>");
+	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=0&author=$login_id\";' value='My'>");
+	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=1&author=$login_id\";' value='Myteam'>");
+	/*
+	print("&nbsp;&nbsp;<a href='easykba.php?action=$action&author=&scope=2'>All</a>");
+	print("&nbsp;&nbsp;<a href='easykba.php?action=$action&author=$login_id&scope=0'>MyMap</a>");
+	print("&nbsp;&nbsp;<a href='easykba.php?action=$action&author=$login_id&scope=1'>Myteam</a>");
+	*/
+	print("
+			<input id='id_input_author' name='author' value=''>
+			<input class='btn' tabindex=0 type='submit' onclick='javascript:val = document.getElementById(\"id_input_author\").value; window.location.href=\"easykba.php?action=$action&scope=2&author=\"+val; return false;' value='Show'>
+			");
+	print("<br>");
+}
 
 ?>
