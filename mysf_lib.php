@@ -304,7 +304,6 @@ function show_myteam_menu($login_id, $action)
 			<input id='id_input_author' name='author' value=''>
 			<input class='btn' tabindex=0 type='submit' onclick='javascript:val = document.getElementById(\"id_input_author\").value; window.location.href=\"easykba.php?action=$action&scope=2&author=\"+val; return false;' value='Show'>
 			");
-	print("<br>");
 }
 
 ?>
