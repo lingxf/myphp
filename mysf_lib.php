@@ -1,7 +1,7 @@
 <?php 
 include_once 'myphp/common.php';
 include_once 'myphp/disp_lib.php';
-function get_all_subordinate($uid)
+function get_all_subordinate($uid, $field_name='author')
 {
 	$user[] = array();
 	$user[] = $uid;
@@ -15,7 +15,7 @@ function get_all_subordinate($uid)
 		while($row = mysql_fetch_array($res)){
 			$muid = $row['user_id'];
 			$ucond .= " or supervisor = '$muid' ";
-			$acond .= " or author = '$muid' ";
+			$acond .= " or `$field_name`= '$muid' ";
 			$user[] = $muid;
 			$nomore = false;
 		}
@@ -267,7 +267,7 @@ function update_next_pa_id($id1, $id2, $value){
 	return false;
 }
 
-function get_cond_by_author(&$author, $scope)
+function get_cond_by_author(&$author, $scope, $field_name='author')
 {
 		$cond = '';
 		if($scope == 1){
@@ -280,10 +280,10 @@ function get_cond_by_author(&$author, $scope)
 			$cond = " 0 ";
 			foreach($authors as $au){
 				if($scope == 0){
-					$cond .= " or author = '$au' ";
+					$cond .= " or `$field_name` = '$au' ";
 				}else if($scope == 1 || $scope == 2){
-					$cond .= " or author = '$au' or ";
-					$cond .= get_all_subordinate($au);
+					$cond .= " or `$field_name` = '$au' or ";
+					$cond .= get_all_subordinate($au, $field_name);
 				}
 			}
 		}
@@ -302,7 +302,7 @@ function show_myteam_menu($login_id, $action)
 	*/
 	print("
 			<input id='id_input_author' name='author' value=''>
-			<input class='btn' tabindex=0 type='submit' onclick='javascript:val = document.getElementById(\"id_input_author\").value; window.location.href=\"easykba.php?action=$action&scope=2&author=\"+val; return false;' value='Show'>
+			<input class='btn' tabindex=0 type='submit' onclick='javascript:val = document.getElementById(\"id_input_author\").value; window.location.href=\"?action=$action&scope=2&author=\"+val; return false;' value='Show'>
 			");
 }
 
