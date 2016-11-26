@@ -306,4 +306,13 @@ function show_myteam_menu($login_id, $action)
 			");
 }
 
+function get_owner_alias($name)
+{
+	$sql = "select `Case Owner Alias` from mysf.clonecase where `Case Owner` = '$name' and `Case Owner Alias` is not NULL and `Case Owner Alias` != ''";
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		return $row['Case Owner Alias'];
+	}
+	return '';
+}
 ?>
