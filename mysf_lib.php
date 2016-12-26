@@ -306,8 +306,21 @@ function show_myteam_menu($login_id, $action)
 			");
 }
 
-function get_owner_alias($name)
+function get_owner_alias(&$name)
 {
+	$sql = "select `Case Owner Alias` from mysf.clonecase where `Case Owner` = '$name' and `Case Owner Alias` is not NULL and `Case Owner Alias` != ''";
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		return $row['Case Owner Alias'];
+	}
+	$name_a = explode(' ', $name);
+	$n = count($name_a);
+	$name = $name_a[1];
+	for($i = 2; $i < $n; $i++){
+		$name .= " ${name_a[$i]}";
+	}
+	$name .= " ${name_a[0]}";
+	print("Switch name:$name ");
 	$sql = "select `Case Owner Alias` from mysf.clonecase where `Case Owner` = '$name' and `Case Owner Alias` is not NULL and `Case Owner Alias` != ''";
 	$res = read_mysql_query($sql);
 	while($row = mysql_fetch_array($res)){
