@@ -164,6 +164,7 @@ function print_table_head_case($id, $width, $field_name, $field_width, $callback
 
 function print_td_case($value, $width, $background='white', $color='black', $script='', $span=true){
 
+	$column = '';
 	if($width != '')
 		$wstr = "width:$width"."pt;";
 	else
@@ -184,7 +185,7 @@ function print_td_case($value, $width, $background='white', $color='black', $scr
 }
 
 
-function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback_row='', $callback='', $clone)
+function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback_row='', $callback='' )
 {
 
 	$bkcolor = array('#B8CCE4', '#DCE6F1');
@@ -222,12 +223,14 @@ function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $fi
 			$bk = $bkline;
 			$fc = $fcline;
 			if($callback != ''){
-				$rback = call_user_func($callback, $field, $value);
+				$rback = call_user_func($callback, $field, &$value, &$fc, &$bk);
+				/*
 				if($rback){
 					$bk = $rback[0];
 					$fc = $rback[1];
 					$value = $rback[2];
 				}
+				*/
 			}
 			print_td_case($value, '', $bk, $fc); 
 		}
