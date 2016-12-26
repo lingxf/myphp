@@ -223,7 +223,7 @@ function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $fi
 			$bk = $bkline;
 			$fc = $fcline;
 			if($callback != ''){
-				$rback = call_user_func($callback, $field, &$value, &$fc, &$bk);
+				$rback = call_user_func_array($callback,array($field, &$value, &$fc, &$bk));
 				/*
 				if($rback){
 					$bk = $rback[0];
