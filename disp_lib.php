@@ -69,7 +69,7 @@ function print_table_head($table_name='', $tr_width=800, $background=0xffffff)
 
 function print_sql_table_head($id, $width, $field_name, $field_width)
 {
-    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
+    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
     print("<tr style='height:33.0pt'>");
 
 	//$table = mysql_field_table($result, $i);
@@ -141,7 +141,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 
 function print_table_head_case($id, $width, $field_name, $field_width, $callback='')
 {
-    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=1 width=1384 style='width:$width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
+    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=1 width=1384 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
     print("<tr style='height:33.0pt'>");
 
 	//$table = mysql_field_table($result, $i);
@@ -161,6 +161,43 @@ function print_table_head_case($id, $width, $field_name, $field_width, $callback
 	}
     print("</tr>");
 }
+
+function show_table_by_month($id, $db, $width, $sql, $name='Field\Month', $col=2,  $mstart=1, $nm=12, $callback='', $format=0, $kpi='count') {
+
+	$count_array = Array();
+	$count_array2 = Array();
+	$ret=mysql_select_db($db);
+	$result = read_mysql_query($sql);
+	while($row=mysql_fetch_array($result)){
+		$key = $row[0];
+		$count_array[$key][0] = $key;
+		$month = $row[1];
+		$value = $row[$col];
+		if($month)
+			$count_array[$key][$month] = $value;
+	}
+
+	$colnames = Array($name, 20);
+	for($m = $mstart; $m < $mstart + $nm; $m++){
+		$month = $m % 12 == 0 ? 12: $m % 12;
+		$colnames[] = $month;
+		$colnames[] = 20;
+	}
+
+	foreach($count_array as $key => $data){
+		$count_array2[$key][0] = $key;
+		for($m = $mstart; $m < $mstart + $nm; $m++){
+			$month = $m % 12 == 0 ? 12: $m % 12;
+			$count_array2[$key][] = $data[$month]; 
+		}
+	}
+
+	if($kpi == 'count')
+		show_table_by_array($table, $count_array2, $colnames, $nm + 1, 1);
+	else
+		show_table_by_array($table, $count_array2, $colnames, $nm + 1, 3);
+}
+
 
 function print_td_case($value, $width, $background='white', $color='black', $script='', $span=true){
 
