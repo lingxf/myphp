@@ -127,7 +127,7 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 			dprintf("%x<br>", $row['pa_id']);
 			return $row['pa_id'];
 		}
-		dprint("not found for $pa1<br>");
+		//dprint("not found for $pa1<br>");
 	}else if($pa3 == ""){
 		$sql = "select * from cnsf.pa where text = '$pa1' and (`pa_id` & 0xffff = 0)  or text = '$pa2'  and (`pa_id` & 0xff = 0) order by pa_id asc"; 
 		$id_array = array();

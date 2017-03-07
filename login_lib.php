@@ -53,7 +53,7 @@ function show_register($page='login_lib.php',$readonly = 'readonly')
 			<input id='id_url' name=\"url\" type='hidden' value=\"$page\" />
 			Password:&nbsp;&nbsp;&nbsp;   <input name=\"password1\" type=\"password\"/><br>
 			Password Again:&nbsp;&nbsp;&nbsp;   <input name=\"password2\" type=\"password\"/><br>
-			<input type=\"submit\" name=\"register\" value=\"Register\" />
+			<input type=\"submit\" name=\"do_register\" value=\"Register\" />
 			<input type=\"submit\" name=\"forget\" value=\"Forget\" />
 			</form> ");
 //			<input type=\"submit\" name=\"register\" onclick=\"javascript:getElementById('id_url').value = window.location.href\" value=\"Register\" />
@@ -249,7 +249,7 @@ if($action == 'login')
 }else if(isset($_POST['forget'])) {
 	handle_forget();
 	exit();
-}else if(isset($_POST['register'])) {
+}else if(isset($_POST['do_register'])) {
 	if(isset($_POST['email']))
 		$email = $_POST['email'];
 	if(isset($_POST['user']))
@@ -285,7 +285,7 @@ if($action == 'login')
 			$message .= " </body> </html> ";
 			mail_html($email, '', "$user activate mail", $message);
 			print "mail to $email for activate, please click the link in the mail<br>";
-			print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",1000);</script>");
+			print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",5000);</script>");
 		}
 	}else{
 		print("2 Password not match!");
