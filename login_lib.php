@@ -212,9 +212,9 @@ if($action == 'login')
 	$rows = mysql_affected_rows();
 	if($rows > 0 ){
 		print "$user activate successfully!";
+		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",10000);</script>");
 	}else
 		print "$user activate fail!";
-	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",1000);</script>");
 	exit();
 }else if(isset($_POST['reset_password'])) {
 	if(isset($_POST['password1']))
