@@ -38,6 +38,18 @@ function get_cur_root(){
 	return dirname(get_cur_php());
 }
 
+function get_cur_month(){
+	$tm = time();
+	$date = getdate($tm);
+	return  $date['mon'];
+}
+
+function get_cur_year(){
+	$tm = time();
+	$date = getdate($tm);
+	return  $date['year'];
+}
+
 function strip($str){
 	$reg = "/^\s*([^\s][^\s\r\n]*)\s*$/";
 	if(preg_match($reg, $str, $match))
