@@ -267,6 +267,15 @@ function update_next_pa_id($id1, $id2, $value){
 	return false;
 }
 
+function set_leader($user_id)
+{
+	$cond = get_cond_by_author($user_id, 2, 'user_id');
+	$sql = "update user.user set team_leads = '$user_id' where $cond";
+	$res = update_mysql_query($sql);
+	$rows = mysql_affected_rows();
+	print("Update $rows rows for $user_id <br>");
+}
+
 function get_cond_by_author(&$author, $scope, $field_name='author')
 {
 		$cond = '';
