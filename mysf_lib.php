@@ -293,6 +293,8 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 				}else if($scope == 1 || $scope == 2){
 					$cond .= " or `$field_name` = '$au' or ";
 					$cond .= get_all_subordinate($au, $field_name);
+				}else if($scope == 3){
+					$cond .= " or team_leads = '$au' ";
 				}
 			}
 		}

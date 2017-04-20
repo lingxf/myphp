@@ -130,8 +130,9 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 				print("<th>Total</th>"); 
 				continue;
 			}
-			if($tt == 0)
+			if($tt == 0|| $tt > 1000000)
 				$tt = "";
+
 			print("<th>$tt</th>"); 
 		}
 		print("</tr>");
@@ -161,6 +162,77 @@ function print_table_head_case($id, $width, $field_name, $field_width, $callback
 	}
     print("</tr>");
 }
+
+/* mode bit
+& 1 - show array[0] as first column, otherwise, key as first column
+& 2 - do not do sum
+*/
+
+function show_table_by_array($table, $count_array, $colname, $col_count=0, $mode=0){
+	$background = '#DCE6F1';
+	$tr_width = 432;
+
+	$table_name = '';
+	if($colname)
+		$table_name = $colname[0];
+	print("<table id='$table_name' width=600 class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$tr_width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
+	if($colname){
+
+		print("<tr style='height:15.0pt'>");
+		if($col_count == 0)
+			$col_count = count($colname)/2;
+		for($col = 0; $col < $col_count*2; $col+=2){
+			$w = $colname[$col+1];
+			$name = $colname[$col];
+		//	print("<td>$name</td>");
+			print("<td width=$w nowrap valign=bottom style='width:20.0pt;border:solid windowtext 1.0pt;                   background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$name</b><o:p></o:p></p></td>");
+			//print("<td width=$w nowrap valign=bottom style='width:20.0pt;border:solid windowtext 1.0pt;border-left:none;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$name</b><o:p></o:p></p></td>");
+		}
+		print("</tr>");
+	}
+
+	if(array_key_exists('Ground Total', $count_array))
+		$sum = $count_array["Ground Total"];
+	else
+		$sum = Array("Ground Total");
+	foreach ($count_array as $key => $data){
+		if($key == 'Ground Total' && !($mode & 2)){
+			continue;
+		}
+		if($key == 'Ground Total')
+			print("<tr style='height:15.0pt;background:$background;'>");
+		else
+			print("<tr style='height:15.0pt;'>");
+		$col = 0;
+		$width = $colname[$col+1];
+		if($mode & 1){
+			print_td_pa($width,43.8,$background,$data[0]);
+			$col = 1;
+			$col_max = $col_count;
+		}else{
+			print_td_pa($width,43.8,$background,$key);
+			$col_max = $col_count - 1;
+		}
+		for(;$col < $col_max; $col++){
+			$value = $data[$col];
+			$width = $colname[$col*2+1];
+			print_td_pa($width,43.8,$background,$value);
+
+			if($mode & 1)
+				$sum[$col] += $value;
+			else
+				$sum[$col+1] += $value;
+		}
+		print("</tr>");
+	}
+	if(!($mode & 2))
+		print_tr_array($background, $sum);
+	print("</table>");
+	print("<br/>");
+	return; 
+}
+
+
 
 function show_table_by_month($id, $db, $width, $sql, $name='Field\Month', $col=2,  $mstart=1, $nm=12, $callback='', $format=0, $kpi='count') {
 
