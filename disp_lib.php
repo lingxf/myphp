@@ -67,13 +67,20 @@ function print_table_head($table_name='', $tr_width=800, $background=0xffffff)
 	print($table_head);
 }
 
-function print_sql_table_head($id, $width, $field_name, $field_width)
+function print_sql_table_head($id, $width, $field_name=array(), $field_width=array())
 {
-    print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
-    print("<tr style='height:33.0pt'>");
+	$background = '#DCE6F1';
+
+    //print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
+	print("<table id='$id' class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
+    //print("<tr style='height:33.0pt'>");
+
 
 	//$table = mysql_field_table($result, $i);
 	$wn = count($field_width);
+	if($wn == 0)
+		return;
+	print("<tr style='height:15.0pt;background:$background;'>");
 	$i = 0;
 	foreach($field_name as $field){
 		if($i < $wn && $field_width[$i] != 0){
@@ -81,7 +88,8 @@ function print_sql_table_head($id, $width, $field_name, $field_width)
 			$attr="width=$width";
 		}else
 			$attr = '';
-		print("<th $attr>$field</th>"); 
+		print("<td $attr nowrap valign=bottom style='width:20.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
+		//print("<th $attr>$field</th>"); 
 		$i++;
 	}
     print("</tr>");
@@ -108,21 +116,22 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 	print_sql_table_head($id, $width, $field_name, $field_width);
 	$fields_num = mysql_num_fields($result);
 	while($row=mysql_fetch_array($result)){
-        print("<tr style='height:33.0pt'>");
+        print("<tr style='height:15.0pt'>");
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
 			$value = $row[$i];
 			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
 				$value = call_user_func($callback, $field, $value, $row);
-			print("<td>$value</td>"); 
+			print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
+			//print("<td>$value</td>"); 
 		}
 		print("</tr>");
 	}
 	if($callback != '')
 		$sum = call_user_func($callback, 'sum', $sum);
 	if($format == 0){
-		print("<tr style='height:33.0pt'>");
+		print("<tr style='height:15.0pt;background:#DCE6F1;'>");
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
 			$tt = $sum[$field];
@@ -139,6 +148,49 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 	}
 	print("</table>");
 }
+
+function show_table_by_sql_vertical($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='', $format=0)
+{
+	$ret=mysql_select_db($db);
+
+	$result = read_mysql_query($sql);
+	$columns = count($field_name);
+
+	$sum = array();
+	if($format == 1){
+		$rows = mysql_num_rows($result);
+		print("Total:$rows");
+	}
+
+	print_sql_table_head($id, $width, $field_name, $field_width);
+
+	$field_name = array();
+	for ($i = 0; $i < mysql_num_fields($result); ++$i) {
+		$field = mysql_field_name($result, $i);
+		$field_name[] = $field;
+	}
+
+	$fields_num = mysql_num_fields($result);
+	$line = 0;
+	while($row=mysql_fetch_array($result)){
+		for ($i = 0; $i < $fields_num; ++$i) {
+			$data[$line][] = $row[$i];
+		}
+		$line += 1;
+	}
+	for ($i = 0; $i < $fields_num; ++$i) {
+        print("<tr style='height:15.0pt'>");
+		$field = $field_name[$i];
+		print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$field<o:p></o:p></p></td>");
+		for($j = 0; $j < $line; $j++){
+			$value = $data[$j][$i];
+			print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
+		}
+		print("</tr>");
+	}
+	print("</table>");
+}
+
 
 function print_table_head_case($id, $width, $field_name, $field_width, $callback='')
 {
