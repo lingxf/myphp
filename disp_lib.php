@@ -78,7 +78,8 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 
 	//$table = mysql_field_table($result, $i);
 	$wn = count($field_width);
-	if($wn == 0)
+	$fn = count($field_name);
+	if($fn == 0)
 		return;
 	print("<tr style='height:15.0pt;background:$background;'>");
 	$i = 0;
