@@ -137,13 +137,13 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$field = mysql_field_name($result, $i);
 			$tt = $sum[$field];
 			if($i == 0){
-				print("<th>Total</th>"); 
+				print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>Total<o:p></o:p></p></td>");
 				continue;
 			}
 			if($tt == 0|| $tt > 1000000)
 				$tt = "";
 
-			print("<th>$tt</th>"); 
+			print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$tt<o:p></o:p></p></td>");
 		}
 		print("</tr>");
 	}
