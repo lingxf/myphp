@@ -87,9 +87,11 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 		if($i < $wn && $field_width[$i] != 0){
 			$width = $field_width[$i];
 			$attr="width=$width";
-		}else
-			$attr = '';
-		print("<td $attr nowrap valign=bottom style='width:20.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
+		}else{
+			$width = 0;
+			$attr="width=$width";
+		}
+		print("<td $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
 		//print("<th $attr>$field</th>"); 
 		$i++;
 	}
@@ -124,7 +126,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
 				$value = call_user_func($callback, $field, $value, $row);
-			print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
+			print("<td valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
 			//print("<td>$value</td>"); 
 		}
 		print("</tr>");
