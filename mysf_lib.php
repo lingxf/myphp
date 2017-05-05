@@ -267,15 +267,23 @@ function update_next_pa_id($id1, $id2, $value){
 	return false;
 }
 
-function set_leader($user_id)
+function set_leader($user_id, $overwrite=True)
 {
 	$cond = get_cond_by_author($user_id, 2, 'user_id');
-	$sql = "update user.user set team_leads = '$user_id' where $cond";
+	$sql = "update user.user set team_leads = '$user_id' where $cond ";
+	if(!$overwrite)
+		$sql .= " and team_leads = '' ";
 	$res = update_mysql_query($sql);
 	$rows = mysql_affected_rows();
 	print("Update $rows rows for $user_id <br>");
+	return $rows;
 }
-
+/*
+scope=
+1 my team 
+2 team report to author
+3 team team_leads to author
+*/
 function get_cond_by_author(&$author, $scope, $field_name='author')
 {
 		$cond = '';
