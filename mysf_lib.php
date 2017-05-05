@@ -186,13 +186,14 @@ function get_3pa_by_id($pa_id)
 	$sql = "select * from cnsf.pa where `pa_id` = $pa_id or `pa_id` = ( $pa_id & 0xff0000) or `pa_id` = ( $pa_id & 0xffff00) ";
 	$res=read_mysql_query($sql);
 	$text = '';
+	$pas = array('', '', '');
 	while($row = mysql_fetch_array($res)){
 		$id = $row['pa_id'];
 		if($id == ($pa_id & 0xff0000))
 			$pas[0] = $row['text'];
-		if($id == ($pa_id & 0xffff00))
+		else if($id == ($pa_id & 0xffff00))
 			$pas[1] = $row['text'];
-		if($id == $pa_id)
+		else if($id == $pa_id)
 			$pas[2] = $row['text'];
 	}
 	return $pas;
