@@ -100,8 +100,10 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 
 /*
 $format 
- 0 - no summary count
- 1 - nowrap
+ 0 - summary count
+ 1 - no summary count
+ 2 - no wrap 
+ 4 - show total
 */
 function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='', $format=0)
 {
@@ -116,7 +118,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		}
 	}
 	$sum = array();
-	if($format == 1){
+	if(($format & 4) != 0){
 		$rows = mysql_num_rows($result);
 		print("Total:$rows");
 	}
@@ -131,10 +133,10 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
 				$value = call_user_func($callback, $field, $value, $row);
-			$td = "<td"; 
+			$td = "<td "; 
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
-			$td .= "valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>";
+			$td .= " valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>";
 			print($td);
 			//print("<td>$value</td>"); 
 		}
