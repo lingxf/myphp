@@ -98,6 +98,11 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
     print("</tr>");
 }
 
+/*
+$format 
+ 0 - no summary count
+ 1 - nowrap
+*/
 function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='', $format=0)
 {
 	$ret=mysql_select_db($db);
@@ -126,14 +131,18 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
 				$value = call_user_func($callback, $field, $value, $row);
-			print("<td valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
+			$td = "<td"; 
+			if( ($format & 2) != 0)
+				$td .= " nowrap ";
+			$td .= "valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>";
+			print($td);
 			//print("<td>$value</td>"); 
 		}
 		print("</tr>");
 	}
 	if($callback != '')
 		$sum = call_user_func($callback, 'sum', $sum);
-	if($format == 0){
+	if(($format & 1) == 0 ){
 		print("<tr style='height:15.0pt;background:#DCE6F1;'>");
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
