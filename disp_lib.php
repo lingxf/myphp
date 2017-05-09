@@ -122,15 +122,17 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		$rows = mysql_num_rows($result);
 		print("Total:$rows");
 	}
-
+	$noempty = false;
 	print_sql_table_head($id, $width, $field_name, $field_width);
 	$fields_num = mysql_num_fields($result);
 	while($row=mysql_fetch_array($result)){
         print("<tr style='height:15.0pt'>");
+		$noempty = true;
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
 			$value = $row[$i];
-			$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
+			if(is_numeric($value) && !strstr($value, '.'))
+				$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			if($callback != '')
 				$value = call_user_func($callback, $field, $value, $row);
 			$td = "<td "; 
@@ -148,7 +150,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		print("<tr style='height:15.0pt;background:#DCE6F1;'>");
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
-			$tt = $sum[$field];
+			$tt = isset($sum[$field])?$sum[$field]:'';
 			if($i == 0){
 				print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>Total<o:p></o:p></p></td>");
 				continue;
