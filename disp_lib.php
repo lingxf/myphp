@@ -67,7 +67,7 @@ function print_table_head($table_name='', $tr_width=800, $background=0xffffff)
 	print($table_head);
 }
 
-function print_sql_table_head($id, $width, $field_name=array(), $field_width=array())
+function print_sql_table_head($id, $width, $field_name=array(), $field_width=array(), $callback)
 {
 	$background = '#DCE6F1';
 
@@ -91,6 +91,8 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 			$width = 0;
 			$attr="width=$width";
 		}
+
+		$field = call_user_func($callback, $field, 'title', $field_name);
 		print("<td $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
 		//print("<th $attr>$field</th>"); 
 		$i++;
@@ -123,7 +125,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		print("Total:$rows");
 	}
 	$noempty = false;
-	print_sql_table_head($id, $width, $field_name, $field_width);
+	print_sql_table_head($id, $width, $field_name, $field_width, $callback);
 	$fields_num = mysql_num_fields($result);
 	while($row=mysql_fetch_array($result)){
         print("<tr style='height:15.0pt'>");
