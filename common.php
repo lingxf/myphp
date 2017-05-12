@@ -122,6 +122,13 @@ function visit_record($table, $ver='')
 	$res = mysql_query($sql) or die("Invalid update query:" . $sql . mysql_error());
 }
 
+function get_url_var($name, $default)
+{
+	$var=isset($_GET[$name])?$_GET[$name]:$default;
+	$var=isset($_POST[$name])?$_POST[$name]:$default;
+	return $var;
+}
+
 function get_persist_var($name, $default)
 {
 	$var=isset($_SESSION[$name])?$_SESSION[$name]:$default;

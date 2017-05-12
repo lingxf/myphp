@@ -91,8 +91,8 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 			$width = 0;
 			$attr="width=$width";
 		}
-
-		$field = call_user_func($callback, $field, 'title', $field_name);
+		if($callback != '')
+			$field = call_user_func($callback, $field, $field, $field_name);
 		print("<td $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
 		//print("<th $attr>$field</th>"); 
 		$i++;
@@ -180,7 +180,7 @@ function show_table_by_sql_vertical($id, $db, $width, $sql, $field_name=array(),
 		print("Total:$rows");
 	}
 
-	print_sql_table_head($id, $width, $field_name, $field_width);
+	print_sql_table_head($id, $width, $field_name, $field_width, $callback);
 
 	$field_name = array();
 	for ($i = 0; $i < mysql_num_fields($result); ++$i) {
@@ -284,14 +284,14 @@ function show_table_by_array($table, $count_array, $colname, $col_count=0, $mode
 			$col_max = $col_count - 1;
 		}
 		for(;$col < $col_max; $col++){
-			$value = $data[$col];
-			$width = $colname[$col*2+1];
+			$value = isset($data[$col])?$data[$col]:0;
+			$width = isset($colname[$col*2+1])?$colname[$col*2+1]:0;
 			print_td_pa($width,43.8,$background,$value);
 
 			if($mode & 1)
-				$sum[$col] += $value;
+				$sum[$col] = isset($sum[$col]) ? $sum[$col] + $value: $value;
 			else
-				$sum[$col+1] += $value;
+				$sum[$col + 1] = isset($sum[$col+1]) ? $sum[$col+1] + $value: $value;
 		}
 		print("</tr>");
 	}
