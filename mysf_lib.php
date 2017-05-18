@@ -15,7 +15,7 @@ function get_all_subordinate($uid, $field_name='author')
 		while($row = mysql_fetch_array($res)){
 			$muid = $row['user_id'];
 			$ucond .= " or supervisor = '$muid' ";
-			$acond .= " or `$field_name`= '$muid' ";
+			$acond .= " or $field_name = '$muid' ";
 			$user[] = $muid;
 			$nomore = false;
 		}
@@ -298,9 +298,9 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 			$cond = " 0 ";
 			foreach($authors as $au){
 				if($scope == 0){
-					$cond .= " or `$field_name` = '$au' ";
+					$cond .= " or $field_name = '$au' ";
 				}else if($scope == 1 || $scope == 2){
-					$cond .= " or `$field_name` = '$au' or ";
+					$cond .= " or $field_name = '$au' or ";
 					$cond .= get_all_subordinate($au, $field_name);
 				}else if($scope == 3){
 					$cond .= " or team_leads = '$au' ";
