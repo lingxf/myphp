@@ -148,7 +148,9 @@ function check_login($session_name, $exit_nologin=false)
 		header("Location: login_lib.php?action=register");
 		exit;
 	}else if(isset($_SESSION['user'])){
-		$login_id=$_SESSION['user'];
+		$user=$_SESSION['user'];
+		if($user != '')
+			$login_id = $user;
 	}else{
 		if($exit_nologin){
 			header("Location: login_lib.php?action=login");
