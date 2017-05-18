@@ -125,7 +125,7 @@ function visit_record($table, $ver='')
 function get_url_var($name, $default)
 {
 	$var=isset($_GET[$name])?$_GET[$name]:$default;
-	$var=isset($_POST[$name])?$_POST[$name]:$default;
+	$var=isset($_POST[$name])?$_POST[$name]:$var;
 	return $var;
 }
 
