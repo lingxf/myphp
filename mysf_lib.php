@@ -130,29 +130,44 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 		//dprint("not found for $pa1<br>");
 	}else if($pa3 == ""){
 		$sql = "select * from cnsf.pa where text = '$pa1' and (`pa_id` & 0xffff = 0)  or text = '$pa2'  and (`pa_id` & 0xff = 0) order by pa_id asc"; 
+		dprint($sql);
 		$id_array = array();
+		$id1 = '';
 		$res=mysql_query($sql) or die("Invalid query:" .$sql."<br>".mysql_error());
 		while($row = mysql_fetch_array($res)){
-			$id_array[] = $row['pa_id'];
+			if($row['text'] == $pa1)
+				$id1 = $row['pa_id'];
+			if($row['text'] == $pa2)
+				$id_array[] = $row['pa_id'];
 		}
-		if(count($id_array) == 2 && ($id_array[0] == ($id_array[1] & 0xff0000))) {
-			dprintf("%x:%x<br>", $id_array[0], $id_array[1]);
-			return $id_array[1];
+		if($id1 != '' && count($id_array) >= 2){
+			foreach($id_array as $id2){
+				if($id1 == ($id2 & 0xff0000)) {
+					dprintf("%x:%x<br>", $id_array[0], $id_array[1]);
+					return $id_array[1];
+				}
+			}
 		}
-		dprint("not found for $pa2<br>");
+		dprint("not found for PA2:$pa2<br>");
 	}else{	
 		$sql = "select * from cnsf.pa where text = '$pa1' or text = '$pa2' or text = '$pa3' order by pa_id asc"; 
 		$res=mysql_query($sql) or die("Invalid query:" .$sql."<br>".mysql_error());
 		$pa_array = array();
 		$id_array = array();
+		$id2_array = array();
+		dprint($sql);
 		dprint("$pa1|$pa2|$pa3");
 		while($row = mysql_fetch_array($res)){
 			if($row['text'] == $pa1)
 				$id1 = $row['pa_id'];
 			if($row['text'] == $pa2)
-				$id2 = $row['pa_id'];
+				$id2_array[] = $row['pa_id'];
 			if($row['text'] == $pa3)
 				$id_array[] = $row['pa_id'];
+		}
+		foreach($id2_array as $id2_){
+				if($id1 == ($id2_ & 0xff0000))
+					$id2 = $id2_;
 		}
 		if(count($id_array) >= 1)
 			foreach($id_array as $id3){
@@ -161,11 +176,7 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 					return $id3;
 				}
 			}
-		dprint("not found for $pa3<br>");
-		if(isset($id2))
-			return $id2;
-		if(isset($id1))
-			return $id1;
+		dprint("not found for PA3:$pa3<br>");
 
 	}
 	return 0;
@@ -198,6 +209,34 @@ function get_3pa_by_id($pa_id)
 	}
 	return $pas;
 }	
+
+function get_paline_by_id($pa_id)
+{
+	$sql = "select * from pa where `pa_id` = $pa_id or `pa_id` = ( $pa_id & 0xff0000) or `pa_id` = ( $pa_id & 0xffff00) ";
+	$res=read_mysql_query($sql);
+	$text = '';
+	$pa3 = '';
+	$pa2 = '';
+	$pa1 = '';
+	while($row = mysql_fetch_array($res)){
+		$id = $row['pa_id'];
+		if($id == ($pa_id & 0xff0000))
+			$pa1 =  $row['text'];
+		if($id == ($pa_id & 0xffff00))
+			$pa2 =  $row['text'];
+		if($id == $pa_id)
+			$pa3 =  $row['text'];
+	}
+	if($pa3 == '')
+		return '';
+	if( ($pa_id & 0xff) == 0)
+		return "$pa1|$pa2|";
+	if( ($pa_id & 0xff) == 0xfe)
+		return "$pa1|$pa2|";
+	if( ($pa_id & 0xff00) == 0xfe00)
+		return "$pa1||";
+	return "$pa1|$pa2|$pa3";
+}
 
 function get_pa_by_id($pa_id, $type=0)
 {
