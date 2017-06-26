@@ -138,6 +138,46 @@ function get_persist_var($name, $default)
 	return $var;
 }
 
+function get_latest_file($path, $match, $time_limit=0){
+	$d = dir($path);
+	$file = '';
+	$lasttm = gmmktime(0,0,0,10,3,1975);
+	while(false !== ($entry = $d->read())) {
+		$tm = filemtime($path . "/" . $entry);
+
+		//print date("H:i:s $entry\n", $tm);
+		if(preg_match("/$match/", $entry))
+			if($tm > $lasttm){ 
+				$file = $path . "/". $entry;
+				$lasttm = $tm;
+			}
+	}
+	//print "last file".$file;
+	if($time_limit != 0){
+		$after = time() - $time_limit;
+		if($lasttm < $after){
+			print("latest file time".date("H:i:s", $lasttm)." before ".date("H:i:s", $after)." skip...\n");
+			return false;
+		}
+	}
+	return $file;	
+}
+
+
+function excel_get_column($name) {
+    if (strlen($name) != 0) {
+        $name = strtoupper($name);
+        $num_chars = count($name);
+        $number = 0;
+        for ($i = 0; $i < $num_chars; ++$i) {
+            $number += (ord($name[$i]) - 64);
+        }
+        return $number;
+    } else {
+        return 0;
+    }
+}
+
 function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='')
 {
 	$tables = array();
@@ -187,7 +227,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
     $current_sheet = $objPHPExcel->getSheet($s);
     
     $num_rows = $current_sheet->getHighestRow();
-    $num_cols = PMA_getColumnNumberFromName($current_sheet->getHighestColumn());
+    $num_cols = excel_get_column($current_sheet->getHighestColumn());
    	print "excel line x col : $num_rows x $num_cols<br>\n"; 
 	$url = "";
 	$begin_rol = 1;
