@@ -387,4 +387,47 @@ function get_owner_alias(&$name)
 	}
 	return '';
 }
+
+function show_week_select($week){
+	print("Week:<select  id=\"sel_week\" name=\"rweek\" onchange=\"change_week('rweek', this.value)\">");
+	if($week == '')
+		$week = 0;
+	for($i = 0; $i <= 54; $i++){
+		if($week == $i)
+			$selected = 'selected';
+		else
+			$selected = '';
+		if($i == 0)
+			print("<option value=\"$i\" $selected >all</option>");
+		else
+			print("<option value=\"$i\" $selected >$i</option>");
+	}
+	print("</select>");
+}
+
+
+function show_month_select($month){
+	print("Month:<select  id=\"sel_month\" name=\"rmonth\" onchange=\"change_month('rmonth', this.value)\">");
+	for($i = 1; $i <= 12; $i++){
+		if($month == $i)
+			$selected = 'selected';
+		else
+			$selected = '';
+		print("<option value=\"$i\" $selected >$i</option>");
+	}
+	print("</select>");
+}
+
+function show_year_select($year){
+	print("Year:<select  id=\"sel_year\" name=\"ryear\" onchange=\"change_year('ryear', this.value)\">");
+	for($i = 2016; $i <= 2017; $i++){
+		if($year == $i)
+			$selected = 'selected';
+		else
+			$selected = '';
+		print("<option value=\"$i\" $selected >$i</option>");
+	}
+	print("</select>");
+}
+
 ?>
