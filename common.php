@@ -178,7 +178,7 @@ function excel_get_column($name) {
     }
 }
 
-function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='')
+function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0)
 {
 	$tables = array();
 	$col_names = array();
@@ -267,7 +267,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 						else{
 							$old = $colname;
 							$colname = $trans_array[$colname];
-							print(" transer $old to $colname<br>");
+							print(" transfer $old to $colname<br>");
 						}
 					}else{
 						#print("field:$colname<br>\n");
@@ -297,7 +297,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					if($colname == $key)
 						$keyvalue = $cell;
 					$rows[$colname] = $cell;	
-					dprint("$colname:$cell<br>");
+					//dprint("$colname:$cell<br>");
 					$cell = str_replace("'", "''", $cell);
 					$cell = str_replace("\\", "\\\\", $cell);
 					if($first == 0)
@@ -310,7 +310,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					print "skip empty line<br>\n";
 					$emptyline = false;
 				}else{
-					dprint("$sql<br>\n");
+					//dprint("$sql<br>\n");
 					if($more != '')
 						$sql .= ", $more ";
 					if($time != '')
@@ -330,6 +330,10 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 						$new++;
 					};
 					$incount++;
+                    if($limit != 0 && $r > $limit){
+						print("exceed limit=$limit line\n");
+                        break;
+                    }
 					if(($r % 1000) == 0){
 						print("Done $r line<br>\n");
 						flush();
