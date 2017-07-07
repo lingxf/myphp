@@ -296,6 +296,13 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					}
 					if($colname == $key)
 						$keyvalue = $cell;
+					if($colname == 'modified_date'){
+						$tm = strtotime($cell);
+						if($tm){
+							$cell = date('Y-m-d H:i:s', $tm);
+						}
+					}
+
 					$rows[$colname] = $cell;	
 					//dprint("$colname:$cell<br>");
 					$cell = str_replace("'", "''", $cell);
@@ -306,6 +313,9 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 						$sql .= " , `$colname` = '$cell' " ;
 					$first++;
 				}
+
+				if($rows['status'] == 'Superseded')
+					continue;
 				if($emptyline){
 					print "skip empty line<br>\n";
 					$emptyline = false;
