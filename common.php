@@ -178,7 +178,7 @@ function excel_get_column($name) {
     }
 }
 
-function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0)
+function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0, $extra_cond='')
 {
 	$tables = array();
 	$col_names = array();
@@ -300,6 +300,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 						$tm = strtotime($cell);
 						if($tm){
 							$cell = date('Y-m-d H:i:s', $tm);
+							$mdate = $cell;
 						}
 					}
 
@@ -332,6 +333,8 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					//	print("Fail:$r:${rows['kba_id']}, ${rows['status']}, ${rows['author']} <br>");
 					//	print("Failed query:" . $sql . mysql_error());
 						$sql_replace = "update $tbname set " . $sql." where `$key` = '$keyvalue'";
+						if($extra_cond)
+							$sql_replace .= "  and modified_date < '$mdate' ";
 						$res=update_mysql_query($sql_replace);
 						$up = mysql_affected_rows();
 						$update += $up/2;
