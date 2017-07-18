@@ -184,6 +184,25 @@ function excel_get_column($name) {
     }
 }
 
+function get_id_by_name($class_list, $name)
+{
+	foreach($class_list as $key => $class_text) {
+		if($name == $class_text)
+			return $key;
+	}
+	return -1;
+}
+
+function get_tb_list($db, $tb_name, $id, $field_name, $cond=1)
+{
+	$class_list = array();
+	$sql = "select * from $db.$tb_name where $cond order by $id ";
+	$res = read_mysql_query($sql);
+	while($rows = mysql_fetch_array($res)){
+		$class_list[$rows[$id]] = $rows[$field_name]; 	
+	}
+	return $class_list;
+}
 
 function get_tb_fields($db, $tbname)
 {
