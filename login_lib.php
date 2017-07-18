@@ -2,7 +2,6 @@
 /*
    copyright Xiaofeng(Daniel) Ling<lingxf@gmail.com>, 2016, Aug.
  */
-$db=1;
 include_once 'db_connect.php';
 include_once 'myphp/common.php';
 

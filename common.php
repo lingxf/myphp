@@ -129,6 +129,12 @@ function get_url_var($name, $default)
 	return $var;
 }
 
+function get_session_var($name, $default)
+{
+	$var=isset($_SESSION[$name])?$_SESSION[$name]:$default;
+	return $var;
+}
+
 function get_persist_var($name, $default)
 {
 	$var=isset($_SESSION[$name])?$_SESSION[$name]:$default;
@@ -178,18 +184,25 @@ function excel_get_column($name) {
     }
 }
 
+
+function get_tb_fields($db, $tbname)
+{
+	$fields = mysql_list_fields($db, $tbname);
+	$columns = mysql_num_fields($fields);
+	$field_names  = array();
+	for ($i = 0; $i < $columns; $i++) {
+		$field_names[] = mysql_field_name($fields, $i);
+	}
+	return $field_names;
+}
+
 function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0, $extra_cond='')
 {
 	$tables = array();
 	$col_names = array();
 
-	$fields = mysql_list_fields($db, $tbname);
-	$columns = mysql_num_fields($fields);
-	$table_fields  = array();
+	$table_fields = get_tb_fields($db, $tbname);
 
-	for ($i = 0; $i < $columns; $i++) {
-		$table_fields[] = mysql_field_name($fields, $i);
-	}	
 	if(substr_count($import_file, '.xlsx') || substr_count($import_file, '.xlsm') ){
 		$xlsx = true;
 		print "  --  xlsx file<br>\n";
