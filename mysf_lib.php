@@ -124,13 +124,11 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 		$sql = "select * from cnsf.pa where text = '$pa1' and (`pa_id` & 0xffff = 0) "; 
 		$res=mysql_query($sql) or die("Invalid query:" .$sql."<br>".mysql_error());
 		while($row = mysql_fetch_array($res)){
-			dprintf("%x<br>", $row['pa_id']);
 			return $row['pa_id'];
 		}
 		//dprint("not found for $pa1<br>");
 	}else if($pa3 == ""){
 		$sql = "select * from cnsf.pa where text = '$pa1' and (`pa_id` & 0xffff = 0)  or text = '$pa2'  and (`pa_id` & 0xff = 0) order by pa_id asc"; 
-		dprint($sql);
 		$id_array = array();
 		$id1 = '';
 		$res=mysql_query($sql) or die("Invalid query:" .$sql."<br>".mysql_error());
@@ -148,15 +146,14 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 				}
 			}
 		}
-		dprint("not found for PA2:$pa2<br>");
+		//dprint("not found for PA2:$pa2<br>");
 	}else{	
 		$sql = "select * from cnsf.pa where text = '$pa1' or text = '$pa2' or text = '$pa3' order by pa_id asc"; 
 		$res=mysql_query($sql) or die("Invalid query:" .$sql."<br>".mysql_error());
 		$pa_array = array();
 		$id_array = array();
 		$id2_array = array();
-		dprint($sql);
-		dprint("$pa1|$pa2|$pa3");
+		//dprint("$pa1|$pa2|$pa3");
 		while($row = mysql_fetch_array($res)){
 			if($row['text'] == $pa1)
 				$id1 = $row['pa_id'];
@@ -176,7 +173,7 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 					return $id3;
 				}
 			}
-		dprint("not found for PA3:$pa3<br>");
+		//dprint("not found for PA3:$pa3<br>");
 
 	}
 	return 0;
