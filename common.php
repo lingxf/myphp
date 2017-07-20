@@ -2,14 +2,14 @@
 include_once 'debug.php';
 function dprintf($format, $a='', $b='', $c='', $d='', $e='', $f='')
 {
-	global $debug;
-	if($debug == 1)
+	global $debug, $debug_print;
+	if($debug_print == 1 || $debug == 1)
 		printf($format, $a, $b, $c, $d, $e, $f);
 }
 function dprint($format)
 {
-	global $debug;
-	if($debug == 1)
+	global $debug, $debug_print;
+	if($debug_print == 1 || $debug == 1)
 		print($format);
 }
 function get_client_ip(){
