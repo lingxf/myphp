@@ -92,8 +92,8 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 			$width = 0;
 		}
 
-		if($callback != '')
-			$field = call_user_func($callback, $field, $field, $field_name, &$td_attr, &$width);
+		if(is_callable($callback))
+			$field = $callback($field, $field, $field_name, $td_attr, $width);
 
 		$attr="width=$width";
 		print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
@@ -140,8 +140,8 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 				$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			$td_attr = '';
 			$width = 10;
-			if($callback != '')
-				$value = call_user_func($callback, $field, $value, $row, &$td_attr, &$width);
+			if(is_callable($callback))
+				$value = $callback($field, $value, $row, $td_attr, $width);
 			$td = "<td $td_attr "; 
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
@@ -151,8 +151,8 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		}
 		print("</tr>");
 	}
-	if($callback != '')
-		$sum = call_user_func($callback, 'sum', $sum, $row, &$td_attr, &$width);
+	if(is_callable($callback))
+		$sum = $callback('sum', $sum, $row, $td_attr, $width);
 	if(($format & 1) == 0 ){
 		print("<tr style='height:15.0pt;background:#DCE6F1;'>");
 		for ($i = 0; $i < $fields_num; ++$i) {
