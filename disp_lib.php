@@ -84,16 +84,19 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 	print("<tr style='height:15.0pt;background:$background;'>");
 	$i = 0;
 	foreach($field_name as $field){
+		$td_attr = '';
+
 		if($i < $wn && $field_width[$i] != 0){
 			$width = $field_width[$i];
-			$attr="width=$width";
 		}else{
 			$width = 0;
-			$attr="width=$width";
 		}
+
 		if($callback != '')
-			$field = call_user_func($callback, $field, $field, $field_name);
-		print("<td $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
+			$field = call_user_func($callback, $field, $field, $field_name, &$td_attr, &$width);
+
+		$attr="width=$width";
+		print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
 		//print("<th $attr>$field</th>"); 
 		$i++;
 	}
@@ -135,9 +138,11 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$value = $row[$i];
 			if(is_numeric($value) && !strstr($value, '.'))
 				$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
+			$td_attr = '';
+			$width = 10;
 			if($callback != '')
-				$value = call_user_func($callback, $field, $value, $row);
-			$td = "<td "; 
+				$value = call_user_func($callback, $field, $value, $row, &$td_attr, &$width);
+			$td = "<td $td_attr "; 
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
 			$td .= " valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>";
@@ -147,7 +152,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		print("</tr>");
 	}
 	if($callback != '')
-		$sum = call_user_func($callback, 'sum', $sum);
+		$sum = call_user_func($callback, 'sum', $sum, $row, &$td_attr, &$width);
 	if(($format & 1) == 0 ){
 		print("<tr style='height:15.0pt;background:#DCE6F1;'>");
 		for ($i = 0; $i < $fields_num; ++$i) {
