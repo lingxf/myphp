@@ -201,10 +201,11 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 	print("<tr style='height:15.0pt;background:$background;'>");
 	$i = 0;
 	foreach($field_name as $field){
+		$attr = '';
 		$width = 0;
 		$td_attr = '';
 		if(is_callable($callback))
-			$value = $callback($i, 0, $field, $field_name, $td_attr, $width);
+			$value = $callback($i, '((title))', $field, $field_name, $td_attr, $width);
 
 		if($width != 0)
 			$attr="width=$width";
@@ -219,7 +220,7 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 		$tr_attr = "style='height:15.0pt'";
 		$width = 0;
 		if(is_callable($callback))
-			$callback(-1, '', '', $row, $tr_attr, $width);
+			$callback(-1, '((sum))', '', $row, $tr_attr, $width);
         print("<tr $tr_attr>");
 		$noempty = true;
 		for ($i = 0; $i < $fields_num; ++$i) {
@@ -230,7 +231,7 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 			$td_attr = '';
 			$width = 0;
 			if(is_callable($callback))
-				$value = $callback($i, $field, $value, $row, $td_attr, $width);
+				$value = $callback(1000+$i, $field, $value, $row, $td_attr, $width);
 			$td = "<td $td_attr "; 
 			if($width != 0)
 				$td .= " width=$width "; 
