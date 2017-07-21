@@ -208,14 +208,19 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 
 		if($width != 0)
 			$attr="width=$width";
-		print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$value</b><o:p></o:p></p></td>");
+		if($width != -1)
+			print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$value</b><o:p></o:p></p></td>");
 		$i++;
 	}
     print("</tr>");
 
 	/*print table line*/
 	while($row=mysql_fetch_array($result)){
-        print("<tr style='height:15.0pt'>");
+		$tr_attr = "style='height:15.0pt'";
+		$width = 0;
+		if(is_callable($callback))
+			$callback(-1, '', '', $row, $tr_attr, $width);
+        print("<tr $tr_attr>");
 		$noempty = true;
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = $field_name[$i];
@@ -232,7 +237,8 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
 			$td .= " valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>";
-			print($td);
+			if($width != -1)
+				print($td);
 		}
 		print("</tr>");
 	}
@@ -253,7 +259,8 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 			if($value == 0)
 				$value = "";
 
-			print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
+			if($width != -1)
+				print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
 		}
 		print("</tr>");
 	}
