@@ -177,11 +177,20 @@ $format
  1 - summary count
  2 - no wrap 
  4 - show total
+
+function callback($index, $field, $value, $row, &$td_attr, &$width)
+ title tr - index = -1  $field = ((title))
+ title td -   $field = ((title)) $value = $field
+ tr - index = -1
+ td - index, field
+ sum tr - index = -1, $field = ((sum))
+ sum td - index >=1000
+
 */
+
 function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 {
 
-	$background = '#DCE6F1';
 	$result = read_mysql_query($sql);
 	$fields_num = mysql_num_fields($result);
 
@@ -198,7 +207,12 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 
 	/*print table head*/
 	print("<table id='$id' class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
-	print("<tr style='height:15.0pt;background:$background;'>");
+
+	$background = '#DCE6F1';
+	$tr_attr = "style='height:15.0pt;background:$background;'";
+	if(is_callable($callback))
+		$callback(-1, '((title))', '', $field_name, $tr_attr, $width);
+	print("<tr $tr_attr '>");
 	$i = 0;
 	foreach($field_name as $field){
 		$attr = '';
@@ -210,7 +224,7 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 		if($width != 0)
 			$attr="width=$width";
 		if($width != -1)
-			print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$value</b><o:p></o:p></p></td>");
+			print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;'><p class=MsoNormal><b>$value</b><o:p></o:p></p></td>");
 		$i++;
 	}
     print("</tr>");
@@ -220,7 +234,7 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 		$tr_attr = "style='height:15.0pt'";
 		$width = 0;
 		if(is_callable($callback))
-			$callback(-1, '((sum))', '', $row, $tr_attr, $width);
+			$row = $callback(-1, '', '', $row, $tr_attr, $width);
         print("<tr $tr_attr>");
 		$noempty = true;
 		for ($i = 0; $i < $fields_num; ++$i) {
@@ -231,7 +245,7 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 			$td_attr = '';
 			$width = 0;
 			if(is_callable($callback))
-				$value = $callback(1000+$i, $field, $value, $row, $td_attr, $width);
+				$value = $callback($i, $field, $value, $row, $td_attr, $width);
 			$td = "<td $td_attr "; 
 			if($width != 0)
 				$td .= " width=$width "; 
@@ -246,19 +260,20 @@ function show_table_by_sql2($id, $sql, $width, $callback='', $format=0)
 
 	/*print summary line*/
 	if(($format & 1)){
-		print("<tr style='height:15.0pt;background:#DCE6F1;'>");
+		$background = '#DCE6F1';
+		$tr_attr = "style='height:15.0pt;background:$background;'";
+		$width = 0;
+		if(is_callable($callback))
+			$sum = $callback(-1, "((sum))", $value, $sum, $tr_attr, $width);
+		print("<tr $tr_attr '>");
+		
+		$sum[$field_name[0]] = 'Total';
 		for ($i = 0; $i < $fields_num; ++$i) {
-			$field = $fields_name[$i];
-			$sum[$field] = isset($sum[$field])?$sum[$field]:'';
-			$value = $sum[$field];
+			$field = $field_name[$i];
+			$value = isset($sum[$field])?$sum[$field]:'';
+			$width = 0;
 			if(is_callable($callback))
-				$value = $callback($i, 1, $field, $sum, $td_attr, $width);
-			if($i == 0){
-				print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>Total<o:p></o:p></p></td>");
-				continue;
-			}
-			if($value == 0)
-				$value = "";
+				$value = $callback(1000+$i, $field, $value, $sum, $td_attr, $width);
 
 			if($width != -1)
 				print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value<o:p></o:p></p></td>");
