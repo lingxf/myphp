@@ -371,9 +371,12 @@ function get_owner_alias(&$name)
 	}
 	$name_a = explode(' ', $name);
 	$n = count($name_a);
-	$name = $name_a[1];
-	for($i = 2; $i < $n; $i++){
-		$name .= " ${name_a[$i]}";
+	$name = '';
+	if($n > 1){
+		$name = $name_a[1];
+		for($i = 2; $i < $n; $i++){
+			$name .= " ${name_a[$i]}";
+		}
 	}
 	$name .= " ${name_a[0]}";
 	print("Switch name:$name ");
