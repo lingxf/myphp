@@ -157,10 +157,13 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 		while($row = mysql_fetch_array($res)){
 			if($row['text'] == $pa1)
 				$id1 = $row['pa_id'];
-			if($row['text'] == $pa2)
-				$id2_array[] = $row['pa_id'];
-			if($row['text'] == $pa3)
-				$id_array[] = $row['pa_id'];
+			if($row['text'] == $pa2 )
+				if(($row['pa_id'] & 0xff) == 0)	
+					$id2_array[] = $row['pa_id'];
+			if($row['text'] == $pa3 ){
+				if(($row['pa_id'] & 0xff) != 0)	
+					$id_array[] = $row['pa_id'];
+			}
 		}
 		foreach($id2_array as $id2_){
 				if($id1 == ($id2_ & 0xff0000))
