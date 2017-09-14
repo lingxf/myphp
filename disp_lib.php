@@ -16,6 +16,18 @@ function print_td($text, $width='', $color='', $background='', $script='')
 	print $td;
 }
 
+function print_td_nowrap($text, $width='', $color='', $background='', $script='')
+{
+    $td = "<td nowrap width=$width style='width:$width pt;".
+		"background:$background;" .
+		"color:$color;" .
+		"padding:0cm 5.4pt 0cm 5.4pt;height:33.0pt' $script>";
+	$td .= "$text";
+	$td .= "</td>";
+	print $td;
+}
+
+
 function print_th($width1, $width2, $name){
 	print("<td width=$width1 valign=top style='width:$width2 pt;" . 
 		"border-top:windowtext 1.5pt;border-left:windowtext 1.5pt;" . 
@@ -30,7 +42,7 @@ function print_tdlist($tdlist)
 {
 	foreach($tdlist as $tdc)
 	{
-		print("<td>$tdc</td>"); 
+		print("<td >$tdc</td>"); 
 	}
 }
 
@@ -151,6 +163,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		}
 		print("</tr>");
 	}
+	$td_attr = '';
 	if(is_callable($callback))
 		$sum = $callback('sum', $sum, $row, $td_attr, $width);
 	if(($format & 1) == 0 ){
