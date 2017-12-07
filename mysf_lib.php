@@ -1,6 +1,28 @@
 <?php 
 include_once 'myphp/common.php';
 include_once 'myphp/disp_lib.php';
+
+/* 0 - all
+   1 - direct
+   2 - direct with sub
+   3 - direct without sub
+*/
+function get_subordinates($uid, $type=0)
+{
+	$user[] = array();
+	if($type == 0)
+	$sql = " select * from user.user where supervisor != user_id and team_leads = '$uid'";
+	else if($type == 1)
+	$sql = " select * from user.user where supervisor != user_id and supervisor = '$uid'";
+
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		$muid = $row['user_id'];
+		$user[] = $muid;
+	}
+	return $user;
+}
+
 function get_all_subordinate($uid, $field_name='author')
 {
 	$user[] = array();
@@ -411,12 +433,17 @@ function show_week_select($week){
 
 function show_month_select($month){
 	print("Month:<select  id=\"sel_month\" name=\"rmonth\" onchange=\"change_month('rmonth', this.value)\">");
-	for($i = 1; $i <= 12; $i++){
+	if($month == '')
+		$month = 0;
+	for($i = 0; $i <= 12; $i++){
 		if($month == $i)
 			$selected = 'selected';
 		else
 			$selected = '';
-		print("<option value=\"$i\" $selected >$i</option>");
+		if($i == 0)
+			print("<option value=\"$i\" $selected >all</option>");
+		else
+			print("<option value=\"$i\" $selected >$i</option>");
 	}
 	print("</select>");
 }
