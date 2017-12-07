@@ -108,7 +108,8 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 			$field = $callback($field, $field, $field_name, $td_attr, $width);
 
 		$attr="width=$width";
-		print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
+		if($width != -1)
+			print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
 		//print("<th $attr>$field</th>"); 
 		$i++;
 	}
@@ -154,6 +155,8 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$width = 10;
 			if(is_callable($callback))
 				$value = $callback($field, $value, $row, $td_attr, $width);
+			if($field_width[$i] == -1)
+				continue;
 			$td = "<td $td_attr "; 
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
