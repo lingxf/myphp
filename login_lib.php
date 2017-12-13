@@ -226,7 +226,7 @@ if($action == 'login')
 	$url = $_POST['url'];
 	if($ps1 == $ps2)
 	{
-		$sql ="update user.user set password = ENCRYPT('$ps1', 'ab') where user_id = '$user'";
+		$sql ="update user.user set password = ENCRYPT('$ps1', 'ab'), activate=1 where user_id = '$user'";
 		$row = update_mysql_query($sql);
 		if($row > 0)
 			print("update new password sucessful");
