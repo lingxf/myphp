@@ -155,7 +155,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$width = 10;
 			if(is_callable($callback))
 				$value = $callback($field, $value, $row, $td_attr, $width);
-			if($field_width[$i] == -1)
+			if(isset($field_width[$i]) && $field_width[$i] == -1)
 				continue;
 			$td = "<td $td_attr "; 
 			if( ($format & 2) != 0)
