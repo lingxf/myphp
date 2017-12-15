@@ -335,6 +335,9 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 							$mdate = $cell;
 						}
 					}
+					if($colname == 'rev'){
+							$rev = $cell;
+					}
 
 					$rows[$colname] = $cell;	
 					//dprint("$colname:$cell<br>");
@@ -362,11 +365,9 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					$res1=mysql_query($sql_insert);
 					if(!$res1)
 					{
-					//	print("Fail:$r:${rows['kba_id']}, ${rows['status']}, ${rows['author']} <br>");
-					//	print("Failed query:" . $sql . mysql_error());
 						$sql_replace = "update $tbname set " . $sql." where `$key` = '$keyvalue'";
 						if($extra_cond)
-							$sql_replace .= "  and modified_date < '$mdate' ";
+							$sql_replace .= "  and (modified_date < '$mdate' or rev < '$rev') ";
 						$res=update_mysql_query($sql_replace);
 						$up = mysql_affected_rows();
 						$update += $up/2;
