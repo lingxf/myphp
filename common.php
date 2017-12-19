@@ -320,7 +320,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					$cell = $tempRow[$i];
 					$i += 1;
 					if(!in_array($colname, $table_fields)){
-						if(!isset($trans_array[$colname]))
+						if(!isset($trans_array["$colname"]))
 							continue;
 						else{
 							$colname = $trans_array[$colname];
@@ -335,8 +335,13 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 							$mdate = $cell;
 						}
 					}
+					if($colname == 'skip')
+						continue;
 					if($colname == 'rev'){
 							$rev = $cell;
+					}
+					if($colname == 'status'){
+							$status = $cell;
 					}
 
 					$rows[$colname] = $cell;	
@@ -367,7 +372,7 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					{
 						$sql_replace = "update $tbname set " . $sql." where `$key` = '$keyvalue'";
 						if($extra_cond)
-							$sql_replace .= "  and (modified_date < '$mdate' or rev < '$rev') ";
+							$sql_replace .= "  and (modified_date < '$mdate' or rev < '$rev' or status != '$status') ";
 						$res=update_mysql_query($sql_replace);
 						$up = mysql_affected_rows();
 						$update += $up/2;
