@@ -122,6 +122,8 @@ $format
  1 - no summary count
  2 - no wrap 
  4 - show total
+ $value = $callback($field, $value, $row, $td_attr, $width);
+function callback($col, &$value, &$fc, &$bk)
 */
 function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='', $format=0)
 {
@@ -174,6 +176,8 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
 			$tt = isset($sum[$field])?$sum[$field]:'';
+			if(isset($field_width[$i]) && $field_width[$i] == -1)
+				continue;
 			if($i == 0){
 				print("<td nowrap valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>Total<o:p></o:p></p></td>");
 				continue;
