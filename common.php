@@ -143,7 +143,20 @@ function get_persist_var($name, $default)
 	$_SESSION[$name] = $var;
 	return $var;
 }
+function get_user_prop($user_id, $field)
+{
+	$sql="select * from user.user where user_id = '$user_id'";
+	$res=read_mysql_query($sql);
+	while($row=mysql_fetch_array($res)){
+		$lead = $row[$field];
+	}
+	return $lead;
+}
 
+function set_persist_var($name, $var)
+{
+	$_SESSION[$name] = $var;
+}
 function get_latest_file($path, $match, $time_limit=0){
 	$d = dir($path);
 	$file = '';
