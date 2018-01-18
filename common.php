@@ -149,8 +149,9 @@ function get_user_prop($user_id, $field)
 	$res=read_mysql_query($sql);
 	while($row=mysql_fetch_array($res)){
 		$lead = $row[$field];
+		return $lead;
 	}
-	return $lead;
+	return '';
 }
 
 function set_persist_var($name, $var)
