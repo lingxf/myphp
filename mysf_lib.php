@@ -464,4 +464,29 @@ function show_year_select($year){
 	print("</select>");
 }
 
+function import_kba_excel($file)
+{
+	global $login_id;
+	$trans = array(
+	'Name'=>'title',
+	'DCN'=>'kba_id',
+	'Rev'=>'rev',
+	'Related DCN'=>'related',
+	'Status'=>'status',
+	'Created By'=>'author',
+	'Modified By'=>'modified',
+	'Approval Group'=>'approval_group',
+	'Modified On'=>'modified_date',
+	'Short Name'=>'skip',
+	);
+
+	$itm = date("Y-m-d H:i:s", filemtime($file));
+	$more = " importer = '$login_id' ";
+	$time = get_now_date() . " " . get_now_time();
+	$lines = import_excel_file($file, 'cnsf', 'kba_stock','kba_id', $trans, $more, '','', "modified_date" ); 
+	add_import_log("import", "kba", $lines, $time, "Insert $lines kba from $itm\n"); 
+	print("Import $lines");
+}
+
+
 ?>
