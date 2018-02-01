@@ -365,6 +365,10 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 					$cond .= get_all_subordinate($au, $field_name);
 				}else if($scope == 3){
 					$cond .= " or team_leads = '$au' ";
+				}else if($scope == 4){
+					$team_lead = get_user_prop($au, 'team_leads');
+					$cond .= " or $field_name = '$team_lead' or ";
+					$cond .= get_all_subordinate($team_lead, $field_name);
 				}
 			}
 		}
@@ -375,7 +379,7 @@ function show_myteam_menu($login_id, $action)
 {
 	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=2&author=\";' value='All'>");
 	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=0&author=$login_id\";' value='My'>");
-	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=1&author=$login_id\";' value='Myteam'>");
+	print("<input class='btn' tabindex=0 type='submit' onclick='window.location.href=\"?action=$action&scope=1&author=$login_id\";' value='Subteam'>");
 	/*
 	print("&nbsp;&nbsp;<a href='easykba.php?action=$action&author=&scope=2'>All</a>");
 	print("&nbsp;&nbsp;<a href='easykba.php?action=$action&author=$login_id&scope=0'>MyMap</a>");
@@ -450,7 +454,7 @@ function show_month_select($month){
 
 function show_year_select($year){
 	print("Year:<select  id=\"sel_year\" name=\"ryear\" onchange=\"change_year('ryear', this.value)\">");
-	for($i = 2016; $i <= 2017; $i++){
+	for($i = 2016; $i <= 2018; $i++){
 		if($year == $i)
 			$selected = 'selected';
 		else
