@@ -388,7 +388,8 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 					{
 						$sql_replace = "update $tbname set " . $sql." where `$key` = '$keyvalue'";
 						if($extra_cond)
-							$sql_replace .= "  and (modified_date < '$mdate' or rev < $rev or (rev = $rev and status != '$status')) ";
+							$sql_replace .= "  and ( rev <= $rev ) ";
+							//$sql_replace .= "  and (modified_date < '$mdate' or rev < $rev or (rev = $rev and status != '$status')) ";
 						if($keyvalue == 'KBA-170531233609')
 							print $sql_replace;
 						
