@@ -482,7 +482,7 @@ function import_kba_excel($file)
 
 	$itm = date("Y-m-d H:i:s", filemtime($file));
 	$more = " importer = '$login_id' ";
-	$time = get_now_date() . " " . get_now_time();
+	$time = strftime("%Y-%m-%d %H:%M:%S", time());
 	$lines = import_excel_file($file, 'cnsf', 'kba_stock','kba_id', $trans, $more, '','', "modified_date" ); 
 	add_import_log("import", "kba", $lines, $time, "Insert $lines kba from $itm\n"); 
 	print("Import $lines");
