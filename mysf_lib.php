@@ -9,7 +9,7 @@ include_once 'myphp/disp_lib.php';
 */
 function get_subordinates($uid, $type=0)
 {
-	$user[] = array();
+	$user = array();
 	if($type == 0)
 	$sql = " select * from user.user where supervisor != user_id and team_leads = '$uid'";
 	else if($type == 1)
@@ -342,25 +342,29 @@ function set_leader($user_id, $overwrite=True)
 }
 /*
 scope=
-1 my team 
-2 team report to author
+0 author list itself
+1 direct layer report to autho
+2 all layer report to author
 3 team team_leads to author
+4 team author belong to
+5 manual sub_leads to author
 */
 function get_cond_by_author(&$author, $scope, $field_name='author')
 {
 		$cond = '';
-		if($scope == 1){
-			$team = get_my_team($author);
-			if($team != '')
-				$author = "$team";
-		}
 		if($author != ''){
 			$authors = explode(',', $author);
 			$cond = " 0 ";
 			foreach($authors as $au){
 				if($scope == 0){
 					$cond .= " or $field_name = '$au' ";
-				}else if($scope == 1 || $scope == 2){
+				}else if($scope == 1){
+					$cond .= " or $field_name = '$au' ";
+					$team = get_subordinates($au, 1);
+					foreach($team as $own){
+						$cond .= " or $field_name = '$own' ";
+					}
+				}else if($scope == 2){
 					$cond .= " or $field_name = '$au' or ";
 					$cond .= get_all_subordinate($au, $field_name);
 				}else if($scope == 3){
