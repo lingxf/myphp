@@ -47,6 +47,18 @@ function get_all_subordinate($uid, $field_name='author')
 	return $acond;
 }
 
+function get_team_id($lead)
+{
+		$sql = " select * from user.leads where user_id = '$lead'";
+		$res = read_mysql_query($sql);
+		while($row = mysql_fetch_array($res)){
+			$team_id = $row['team_id'];
+			return $team_id;
+		}
+		return 0;
+}
+
+
 function get_my_team($login_id)
 {
 		$sql = " select * from user.user where user_id = '$login_id'";
