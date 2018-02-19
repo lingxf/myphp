@@ -22,7 +22,17 @@ function get_subordinates($uid, $type=0)
 	}
 	return $user;
 }
-
+function get_subteam($uid, $type=0)
+{
+	$user = array();
+	$sql = " select * from user.user where sub_leads = '$uid'";
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		$muid = $row['user_id'];
+		$user[] = $muid;
+	}
+	return $user;
+}
 function get_all_subordinate($uid, $field_name='author')
 {
 	$user[] = array();
@@ -380,11 +390,21 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 					$cond .= " or $field_name = '$au' or ";
 					$cond .= get_all_subordinate($au, $field_name);
 				}else if($scope == 3){
-					$cond .= " or team_leads = '$au' ";
+					if($au == 'dummy')
+						$cond .= " or team_leads is NULL ";
+					else
+						$cond .= " or team_leads = '$au' ";
 				}else if($scope == 4){
 					$team_lead = get_user_prop($au, 'team_leads');
 					$cond .= " or $field_name = '$team_lead' or ";
 					$cond .= get_all_subordinate($team_lead, $field_name);
+				}else if($scope == 5){
+					$cond .= " or $field_name = '$au' ";
+					$team = get_subteam($au);
+					foreach($team as $own){
+						$cond .= " or $field_name = '$own' ";
+					}
+
 				}
 			}
 		}
