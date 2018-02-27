@@ -415,7 +415,7 @@ function show_table_by_array($table, $count_array, $colname, $col_count=0, $mode
 	$table_name = '';
 	if($colname)
 		$table_name = $colname[0];
-	print("<table id='$table_name' width=600 class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$tr_width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
+	print("<table id='$table_name' width=600 class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$tr_width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
 	if($colname){
 
 		print("<tr style='height:15.0pt'>");
