@@ -27,6 +27,15 @@ function print_td_nowrap($text, $width='', $color='', $background='', $script=''
 	print $td;
 }
 
+function print_th_white($width, $name){
+	print("<td valign=top style='width:$width pt;" . 
+		"border-top:windowtext 1.0pt;border-left:windowtext 1.0pt;" . 
+		"border-bottom:windowtext 1.0pt;border-right:windowtext 1.0pt;border-style:solid;" .
+		"padding:0cm 5.4pt 0cm 5.4pt;'>" .
+		"<p class=MsoNormal align=center style='text-align:left'>" .
+		"<b><span style='font-size:10.0pt;font-family:\"Arial\",\"sans-serif\";color:black'>" .
+		"$name<o:p></o:p></span></b></p></td>");
+}
 
 function print_th($width1, $width2, $name){
 	print("<td width=$width1 valign=top style='width:$width2 pt;" . 
@@ -84,7 +93,8 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 	$background = '#DCE6F1';
 
     //print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
-	print("<table id='$id' class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
+	//print("<table id='$id' class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
+    print("<table id='$id' class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=1384 style='width:$width.0pt;margin-left:-1.5pt;border-collapse:collapse'>");
     //print("<tr style='height:33.0pt'>");
 
 
@@ -93,7 +103,7 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 	$fn = count($field_name);
 	if($fn == 0)
 		return;
-	print("<tr style='height:15.0pt;background:$background;'>");
+    print("<tr style='background:$background;padding:0cm 5.4pt 0cm 5.4pt;height:16.0pt'>");
 	$i = 0;
 	foreach($field_name as $field){
 		$td_attr = '';
@@ -108,9 +118,10 @@ function print_sql_table_head($id, $width, $field_name=array(), $field_width=arr
 			$field = $callback($field, $field, $field_name, $td_attr, $width);
 
 		$attr="width=$width";
-		if($width != -1)
-			print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
-		//print("<th $attr>$field</th>"); 
+		if($width != -1){
+			//print("<td $td_attr $attr nowrap valign=bottom style='width:$width.0pt;border:solid windowtext 1.0pt;background:#DCE6F1;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal><b>$field</b><o:p></o:p></p></td>");
+			print_th_white($width, $field); 
+		}
 		$i++;
 	}
     print("</tr>");
@@ -122,12 +133,14 @@ $format
  1 - no summary count
  2 - no wrap 
  4 - show total
+ 8 - skip head line
  $value = $callback($field, $value, $row, $td_attr, $width);
 function callback($col, &$value, $row, &$fc, &$bk)
 */
 function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_width=array(), $callback='', $format=0)
 {
-	$ret=mysql_select_db($db);
+	if($db != '')
+		$ret=mysql_select_db($db);
 
 	$result = read_mysql_query($sql);
 	$columns = count($field_name);
@@ -143,8 +156,13 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		print("Total:$rows");
 	}
 	$noempty = false;
-	print_sql_table_head($id, $width, $field_name, $field_width, $callback);
 	$fields_num = mysql_num_fields($result);
+	if(($format & 8) == 1){
+		$first_row=mysql_fetch_array($result);
+		if($first_row)
+			print_sql_table_head($id, $width, $first_row, $field_width, $callback);
+	}else
+		print_sql_table_head($id, $width, $field_name, $field_width, $callback);
 	while($row=mysql_fetch_array($result)){
         print("<tr style='height:15.0pt'>");
 		$noempty = true;
@@ -350,7 +368,7 @@ function show_table_by_sql_vertical($id, $db, $width, $sql, $field_name=array(),
 function print_table_head_case($id, $width, $field_name, $field_width, $callback='')
 {
     print("<table id='$id' class=MsoNormalTable border=1 cellspacing=0 cellpadding=1 width=1384 style='width:$width.0pt;margin-left:20.5pt;border-collapse:collapse'>");
-    print("<tr style='height:33.0pt'>");
+    print("<tr style='padding:0cm 5.4pt 0cm 5.4pt;height:33.0pt'>");
 
 	//$table = mysql_field_table($result, $i);
 	$wn = count($field_width);
