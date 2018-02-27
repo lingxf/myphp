@@ -81,6 +81,21 @@ function print_tditem($text, $width='', $color='', $background='', $script='')
 	print $td;
 }
 
+function print_tables_begin()
+{
+	print("<table class=MsoNormalTable style='margin-left:2.5pt;border-collapse:collapse;border:solid 0.0pt'>");
+	print("<tr><td border='0' style='float:left;margin:1px;padding: 3px;border:solid black 0.0pt;'>");
+}
+
+function print_tables_inter()
+{
+	print("</td><td border='0' style='float:left;margin:1px;padding: 3px;border:solid white 1.0pt;'>");
+}
+
+function print_tables_end()
+{
+	print("</td></tr></table>");
+}
 
 function print_table_head($table_name='', $tr_width=800, $background=0xffffff)
 {
