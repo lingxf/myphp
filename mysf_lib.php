@@ -523,6 +523,4 @@ function import_kba_excel($file)
 	add_import_log("import", "kba", $lines, $time, "Insert $lines kba from $itm\n"); 
 	print("Import $lines");
 }
-
-
 ?>

@@ -129,6 +129,14 @@ function get_url_var($name, $default)
 	return $var;
 }
 
+function get_pre_var($name, $pre, $default)
+{
+	$var=isset($_SESSION[$name])?$_SESSION[$name]:$default;
+	$var= $pre != '' ? $pre:$var;
+	$_SESSION[$name] = $var;
+	return $var;
+}
+
 function get_session_var($name, $default)
 {
 	$var=isset($_SESSION[$name])?$_SESSION[$name]:$default;
@@ -442,8 +450,8 @@ function export_excel_by_sql($sql, $filename, $title, $width=array())
         // Create new PHPExcel object    
     $objPHPExcel = new PHPExcel();  
     // Set properties    
-    $objPHPExcel->getProperties()->setCreator("sfrule")  
-            ->setLastModifiedBy("cedump-sh")  
+    $objPHPExcel->getProperties()->setCreator("xling")  
+            ->setLastModifiedBy("xling")  
             ->setTitle($title)  
             ->setSubject("Office 2007 XLSX ")  
             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")  

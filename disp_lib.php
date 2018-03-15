@@ -149,6 +149,7 @@ $format
  2 - no wrap 
  4 - show total
  8 - skip head line
+ 16 - last line as summary
  $value = $callback($field, $value, $row, $td_attr, $width);
 function callback($col, &$value, $row, &$fc, &$bk)
 */
@@ -178,16 +179,25 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			print_sql_table_head($id, $width, $first_row, $field_width, $callback);
 	}else
 		print_sql_table_head($id, $width, $field_name, $field_width, $callback);
+	$maxrow = mysql_num_rows($result);
+	$line = 0;
 	while($row=mysql_fetch_array($result)){
-        print("<tr style='height:15.0pt'>");
+		$line += 1;
+		if($line == $maxrow && ($format & 16))
+			print("<tr style='height:15.0pt;background:#DCE6F1;'>");
+		else
+        	print("<tr style='height:15.0pt'>");
 		$noempty = true;
 		for ($i = 0; $i < $fields_num; ++$i) {
 			$field = mysql_field_name($result, $i);
 			$value = $row[$i];
-			if(is_numeric($value) && !strstr($value, '.'))
+			$row['table_id'] = $id;
+			//if(is_numeric($value) && !strstr($value, '.'))
+			if(is_numeric($value))
 				$sum[$field] = isset($sum[$field]) ?$sum[$field]+$value:$value;
 			$td_attr = '';
 			$width = 10;
+			$ovalue = $value;
 			if(is_callable($callback))
 				$value = $callback($field, $value, $row, $td_attr, $width);
 			if(isset($field_width[$i]) && $field_width[$i] == -1)
@@ -195,7 +205,14 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			$td = "<td $td_attr "; 
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
-			$td .= " valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$value</p></td>";
+			if($ovalue == $value){
+				if(strpos($ovalue, "<a") === false)
+					$dvalue =  htmlentities($value);
+				else
+					$dvalue =  $value;
+			}else
+				$dvalue =  $value;
+			$td .= " valign=bottom style='border:solid windowtext 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt'><p class=MsoNormal>$dvalue</p></td>";
 			print($td);
 			//print("<td>$value</td>"); 
 		}
@@ -587,6 +604,44 @@ function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $fi
 		$count++;
 	}
 	print("</table>");
+}
+
+function print_input($text, $width, $id, $value='', $call='')
+{
+	$sc = '';
+	if($call != '')
+		$sc = "onkeyup='$call'";
+	print_input_ext($text, $width, $id, $value, $sc);
+}
+
+function print_input_area($text, $width, $line, $id, $value='', $call='')
+{
+	$sc = '';
+	if($call != '')
+		$sc = "onkeyup='$call'";
+	print("$text<br>");
+	print("<textarea warp='soft' style='width:$width; padding: 2px; border: 1px solid black' type='textarea' rows='$line' maxlength='2000' cols='280' id='$id' value='$value' $sc ></textarea>");
+}
+
+function print_input_ext($text, $width, $id, $value='', $sc)
+{
+	$width .= 'px';
+	print("$text<input style='width:$width; padding: 2px; border: 1px solid black' type='textbox' id='$id' value='$value' $sc ></input>&nbsp;");
+}
+
+function print_table_fields($table)
+{
+	$sql = " select * from $table limit 0, 1";
+	$result = read_mysql_query($sql);
+	for ($i = 0; $i < mysql_num_fields($result); ++$i) {
+		$field = mysql_field_name($result, $i);
+		print("\t['$field','', 50, 3],\n<br>");
+	}
+}
+
+function print_button($name, $id, $onclick)
+{
+	print("<input id='$id' name='$name' onclick='$onclick' type='button' value='$name'></input>");
 }
 
 ?>
