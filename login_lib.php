@@ -2,10 +2,15 @@
 /*
    copyright Xiaofeng(Daniel) Ling<lingxf@gmail.com>, 2016, Aug.
  */
+set_include_path("../:../report:../report/myphp");
+include 'debug.php';
 include_once 'db_connect.php';
-include_once 'myphp/common.php';
+include_once 'common.php';
 
-function check_passwd($login_id, $login_passwd){
+global $user_table;
+if(!$user_table)
+	$user_table = 'user.user';
+function check_passwd2($login_id, $login_passwd){
 
 	$sql1="SELECT * FROM user.user WHERE user_id = '$login_id';";
 	$res1=mysql_query($sql1) or die("Query Error:" . mysql_error());
@@ -25,6 +30,30 @@ function check_passwd($login_id, $login_passwd){
 	return 0;
 }
 
+function check_passwd($login_id, $login_passwd, &$permit)
+{
+	global $user_table;
+	if(!$user_table)
+		$user_table = 'user.user';
+	$permit = 0;
+	$sql="SELECT * FROM $user_table WHERE user_id = '$login_id';";
+	$res=read_mysql_query($sql);
+	$row=mysql_fetch_array($res);
+	if(!$row)
+		return 1;
+	if($row['password'] == "" || $row['password'] == $login_passwd){
+		if(isset($row['permission']))
+			$permit = $row['permission'];
+		return 0;
+	}
+	$hash = $row['password'];
+	if(!password_verify($login_passwd, $hash))
+		return 2;
+	if(isset($row['permission']))
+		$permit = $row['permission'];
+	return 0;
+}
+
 function show_login($page)
 {
 	print(" <html>
@@ -41,6 +70,47 @@ function show_login($page)
 			</form>
 			For China CE team, account already setup, default Login Name is Windows ID and password is your employee number
 			");
+}
+
+function print_js_changepwd()
+{
+	global $login_id;
+	print("
+	<script type='text/javascript'>
+	function do_changepwd()
+	{
+		old_password = document.getElementById('id_old_password').value;
+		password1 = document.getElementById('id_new_password1').value;
+		password2 = document.getElementById('id_new_password2').value;
+		if(password1 != password2){
+			alert('两次密码不一致辞');
+			return false;
+		}
+		url = 'myphp/login_lib.php?action=do_changepwd&user_id=$login_id'+'&password='+old_password+'&new_password='+password1;
+		load_url_reload(url, '', '');
+	}
+	</script>
+	");
+	include 'common_js.php';
+}
+
+function show_changepwd_ui()
+{
+	global $login_id;
+	print_js_changepwd();
+	print("
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+	<meta http-equiv='Content-Language' content='zh-CN' /> 
+	");
+	print_input("用户名 ", 120, 'id_user', "$login_id");
+	print("<br>");
+	print("    旧密码 <input id='id_old_password' style='width:120px; padding: 2px; border: 1px solid black' name=\"password\" type=\"password\"/>");
+	print("<br>");
+	print("    新密码 <input id='id_new_password1' style='width:120px; padding: 2px; border: 1px solid black' name=\"password\" type=\"password\"/>");
+	print("<br>");
+	print("重复新密码 <input id='id_new_password2' style='width:120px; padding: 2px; border: 1px solid black' name=\"password\" type=\"password\"/>");
+	print("<br>");
+	print_button("更改", 'bt_change', 'do_changepwd()');
 }
 
 function show_register($page='login_lib.php',$readonly = 'readonly')
@@ -123,7 +193,8 @@ function check_login($session_name, $exit_nologin=false)
 			$login_id=$_POST['user'];
 			$url = $_POST['url'];
 			if(isset($_POST['password'])) $password=$_POST['password'];
-			$ret = check_passwd($login_id, $password);
+			$permit = 0;
+			$ret = check_passwd($login_id, $password, $permit);
 			if($ret == 1){
 				print("No user $login_id exist");
 				unset($_SESSION['user']); 
@@ -155,6 +226,7 @@ function check_login($session_name, $exit_nologin=false)
 			header("Location: login_lib.php?action=login");
 			exit;
 		}
+		$login_id = 'guest';
 	}
 }
 
@@ -191,6 +263,21 @@ if($action == 'login')
 	$url = isset($_GET['url'])?$_GET['url']:$home_page;
 	show_register($url, '');
 	exit();
+}else if($action == 'show_changepwd'){
+	show_changepwd_ui();
+}else if($action == 'do_changepwd'){
+	$user_id = get_url_var('user_id', 'guest');
+	$password = get_url_var('password', '*');
+	$new_password = get_url_var('new_password', '*');
+	$permit = 0;
+	if(check_passwd($user_id, $password, $permit) === 0){
+		$passwd = password_hash($new_password,PASSWORD_DEFAULT);
+		$sql = "update $user_table set password = '$passwd' where user_id = '$user_id' ";
+		$res = update_mysql_query($sql);
+		print('ok修改密码成功！');
+	}else{
+		print("旧密码错误");
+	}
 }else if(isset($_GET['reset'])) {
 	$sid= $_GET['reset'];
 	$user = $_GET['user'];
