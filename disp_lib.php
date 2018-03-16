@@ -206,7 +206,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 			if( ($format & 2) != 0)
 				$td .= " nowrap ";
 			if($ovalue == $value){
-				if(strpos($ovalue, "<a") === false)
+				if(strpos($ovalue, "<a") === false && strpos($ovalue, "<br>") === false )
 					$dvalue =  htmlentities($value);
 				else
 					$dvalue =  $value;
