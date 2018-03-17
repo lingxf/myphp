@@ -56,7 +56,14 @@ function _load_url(url, behaviour, div, message, new_url, div_err, byid, nook, c
 	if(typeof byid === 'undefined') byid = false;
 	if(typeof nook === 'undefined') nook = false;
 	if(typeof callback === 'undefined') callback = '';
-	loadXMLDoc(url, function() {
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	xmlhttp.onreadystatechange=function() {
 	         if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 			 	text = xmlhttp.responseText;
 				suc_bh = behaviour & 0xff;
@@ -101,7 +108,24 @@ function _load_url(url, behaviour, div, message, new_url, div_err, byid, nook, c
 						document.getElementById(div_err).innerHTML=xmlhttp.status + ' ' + xmlhttp.responseText;
 				}
 			}
-	});
+	};
+
+	xmlhttp.open("GET",url,true);
+	xmlhttp.send();
+}
+
+function load_url_sync(url, div)
+{
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.open("GET",url, false);
+	xmlhttp.send();
+	rtext = xmlhttp.responseText;
+	document.getElementById(div).innerHTML = rtext;
 }
 
 function ajaxFunction()
@@ -150,6 +174,22 @@ function loadXMLDoc(url,cfunc)
 	xmlhttp.open("GET",url,true);
 	xmlhttp.send();
 }
+
+function loadXMLDocByPost(url,arg, cfunc)
+{
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=cfunc;
+	xmlhttp.open("POST",url, true);
+	xmlhttp.setRequestHeader("CONTENT-TYPE","application/x-www-form-urlencoded");
+	xmlhttp.setRequestHeader("Content-Length",arg.length);
+	xmlhttp.setRequestHeader("Connection", "close");
+	xmlhttp.send(arg);
+}
+
 
 function from_html(htmlstr){
 	htmlstr = htmlstr.replace("&lt;", "<", "gm");		
