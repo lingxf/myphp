@@ -252,6 +252,8 @@ if(isset($_GET['action'])){
 
 if($action == 'login')
 {
+	if(!isset($home_page))
+		$home_page = 'home.php';
 	$url = isset($_GET['url'])?$_GET['url']:$home_page;
 	show_login($url);
 	exit();
