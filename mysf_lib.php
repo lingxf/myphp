@@ -360,17 +360,60 @@ function set_leader_direct($user_id, $lead_id)
 	return $rows;
 }
 
-function set_leader($user_id, $overwrite=True)
+function set_leader($user_id, $team_id, $overwrite=True)
 {
 	$cond = get_cond_by_author($user_id, 2, 'user_id');
-	$sql = "update user.user set team_leads = '$user_id' where $cond ";
+	$sql = "update user.user set team_leads = '$user_id', team_id = $team_id where ($cond) ";
 	if(!$overwrite)
-		$sql .= " and team_leads = '' ";
+		$sql .= " and (team_id = 0) ";
 	$res = update_mysql_query($sql);
 	$rows = mysql_affected_rows();
 	print("Update $rows rows for $user_id <br>");
 	return $rows;
 }
+
+function china_ce_lead()
+{
+	$rows = 0;
+	$sql = "select * from user.leads where type=1";
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		$lead = $row['user_id'];
+		$team_id = $row['team_id'];
+		$rows += set_leader($lead, $team_id);	
+	}
+	print("<br>");
+	print("Update total $rows user lead for type 1");
+
+	$rows = 0;
+	$sql = "select * from user.leads where type=3";
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		$lead = $row['user_id'];
+		$rows += set_leader($lead, $team_id, False);	
+	}
+	print("<br>");
+	print("Update total $rows user lead for type 3");
+
+	print("<br>");
+	$rows = 0;
+	$sql = "select * from user.leads_except ";
+	$res = read_mysql_query($sql);
+	while($row = mysql_fetch_array($res)){
+		$user_id = $row['user_id'];
+		$lead = $row['team_leads'];
+		$rows += set_leader_direct($user_id, $lead);	
+	}
+	$rows = set_leader('xdzhu', 1, false);	
+	
+	$sql = "select distinct user.supervisor as user_id from user.user";
+	$sql = "update user.user a right join ($sql) b on a.user_id = b.user_id set is_supervisor = 1 ";
+	$res = update_mysql_query($sql);
+	$row = mysql_affected_rows();
+	print("<br>");
+	print("Update is_supervisor $row line");
+}
+
 /*
 scope=
 0 author list itself
