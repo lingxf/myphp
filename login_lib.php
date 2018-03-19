@@ -169,7 +169,7 @@ function handle_forget()
 			continue;
 		$sql="update user.user set sid=$sid WHERE email = '$email'";
 		update_mysql_query($sql);
-		$message = "Please click <a href=$mail_url?user=$user&reset=$sid>here</a> to reset your password";
+		$message = "Please click <a href=$mail_url?user=$user&reset_id=$sid>here</a> to reset your password";
 		mail_html($email, '', "$user reset mail", $message);
 		print("mail to $email to reset password, please click link in the email");
 		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",3000);</script>");
@@ -280,8 +280,8 @@ if($action == 'login')
 	}else{
 		print("旧密码错误");
 	}
-}else if(isset($_GET['reset'])) {
-	$sid= $_GET['reset'];
+}else if(isset($_GET['reset_id'])) {
+	$sid= $_GET['reset_id'];
 	$user = $_GET['user'];
 	$url = isset($_GET['url'])?$_GET['url']:$home_page;
 	$sql = "select * from user.user where user_id = '$user' and sid = $sid";
