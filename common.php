@@ -1,5 +1,4 @@
 <?php
-include_once 'debug.php';
 function dprintf($format, $a='', $b='', $c='', $d='', $e='', $f='')
 {
 	global $debug, $debug_print;

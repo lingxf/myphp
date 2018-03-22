@@ -639,6 +639,14 @@ function print_table_fields($table)
 	}
 }
 
+function print_button_simple($name, $onclick, $id='')
+{
+	if($id != '')
+		print("<input id='$id' name='$name' onclick='$onclick' type='button' value='$name'></input>");
+	else
+		print("<input name='$name' onclick='$onclick' type='button' value='$name'></input>");
+}
+
 function print_button($name, $id, $onclick)
 {
 	print("<input id='$id' name='$name' onclick='$onclick' type='button' value='$name'></input>");

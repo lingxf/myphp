@@ -65,6 +65,13 @@ $word_archieve = '归档';
 $word_go_recycle = '进入回收站';
 $word_out_recycle = '离开回收站';
 
+if(isset($_SESSION['language']) && $_SESSION['language'] == 'en'){
+	$word_begin = 'Begin';
+	$word_prev = 'Prev';
+	$word_next = 'Next';
+	$word_end = 'End';
+}
+
 function db_field($key)
 {
 	$newk = strstr($key, '.');	
@@ -119,6 +126,22 @@ function get_recycle_table($table)
 	return $ntable;
 }
 
+function get_list_startend($dir, $start, $perpage, $total, &$end, &$p_disabled, &$n_disabled)
+{
+	$start = get_list_range($dir, $start, $perpage, $total);
+	$end = $start + $perpage - 1;
+	if($end > $total -1)
+		$end = $total -1;
+	$p_disabled = '';
+	$n_disabled = '';
+	if($start + $perpage >= $total - 1)
+		$n_disabled = 'disabled';
+	if($start == 0)
+		$p_disabled = 'disabled';
+	return $start;
+}
+
+
 function get_list_range($dir, $start, $perpage, $total)
 {
 	switch($dir){
@@ -142,6 +165,7 @@ function get_list_range($dir, $start, $perpage, $total)
 	if($start < 0)
 		$start = 0;
 	$_SESSION['start'] = $start;
+
 	return $start;
 }
 
@@ -583,5 +607,51 @@ function list_data($start='', $export=false)
 
 }
 
+function list_data_simple($name, $sql='', $width=0, $start='', $perpage=25, $callback='')
+{
+	global  $word_begin, $word_prev, $word_next, $word_end;
+	$dir = get_url_var('dir', 'keep');
+	if($start == -1)
+		$dir = 'end';
+	
+	$startname = "start_".$name;
+	if($start === '')
+		$start = get_persist_var($startname, 0);
+	$widthname = "width_".$name;
+	if($width == 0)
+		$width = get_persist_var($widthname, 800);
+
+	$sqlname = "sql_".$name;
+	if($sql != '') {
+		$_SESSION["$sqlname"] = $sql;
+
+	}else{
+		$sql = $_SESSION["$sqlname"];
+	}
+
+	$result = read_mysql_query($sql);
+	$total = mysql_num_rows($result);
+	$end = 0;
+	$p_disabled = '';
+	$n_disabled = '';
+	$start = get_list_startend($dir, $start, $perpage, $total, $end, $p_disabled, $n_disabled);
+	$_SESSION[$startname] = $start;
+	$hidden = '';
+	if($p_disabled && $n_disabled)
+		$hidden = 'hidden';
+
+	$width_array = array();
+	print("<input $hidden id='button_begin'  name='begin' $p_disabled type='button' onclick='switch_page_simple(\"$name\",\"begin\");' value='$word_begin'></input>");
+	print("<input $hidden id='button_prev' name='prev'  $p_disabled type='button' onclick='switch_page_simple(\"$name\",\"prev\");' value='$word_prev'></input>");
+	print("<input $hidden id='button_next'  name='next'  $n_disabled type='button' onclick='switch_page_simple(\"$name\",\"next\");' value='$word_next'></input>");
+	print("<input $hidden id='button_end' name='end'   $n_disabled type='button' onclick='switch_page_simple(\"$name\",\"end\");' value='$word_end'></input>");
+	print("&nbsp;$start-$end/$total");
+	$sql = "$sql limit $start, $perpage";
+	if($callback == '')
+		$callback = 'data_callback';
+	$callback = get_persist_var('callback_'.$name, $callback);
+	$format = 1;
+	show_table_by_sql("tb_".$name, '', $width, $sql, array(), array(), $callback, $format);
+}
 
 ?>

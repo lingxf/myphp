@@ -28,6 +28,7 @@ function load_url_value(url, id)
 
 function load_url(url, div, message, div_err)
 {
+	if(typeof div === 'undefined') div = '';
 	if(typeof message === 'undefined') message = '';
 	if(typeof div_err === 'undefined') div_err = '';
 	_load_url(url, 0, div, message, '', div_err, false, false, false, '');

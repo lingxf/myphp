@@ -374,6 +374,10 @@ function set_leader($user_id, $team_id, $overwrite=True)
 
 function china_ce_lead()
 {
+	//$rows = set_leader('xianliu', 0, true);	
+	//$rows = set_leader('yubo', 0, true);	
+	//$rows = set_leader('xianliu', 0, true);	
+	//$rows = set_leader('chechang', 0, true);	
 	$rows = 0;
 	$sql = "select * from user.leads where type=1";
 	$res = read_mysql_query($sql);
@@ -404,6 +408,10 @@ function china_ce_lead()
 		$lead = $row['team_leads'];
 		$rows += set_leader_direct($user_id, $lead);	
 	}
+	$rows = set_leader('zhel', 35, false);	
+	$rows = set_leader('xuesongc', 36, false);	
+	$rows = set_leader('xianliu', 1, false);	
+	$rows = set_leader('chechang', 1, false);	
 	$rows = set_leader('xdzhu', 1, false);	
 	
 	$sql = "select distinct user.supervisor as user_id from user.user";
