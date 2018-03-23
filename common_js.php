@@ -52,6 +52,38 @@ function load_url_reload(url, new_url, message)
 	_load_url(url, 1, '', message, new_url, '');
 }
 
+function load_url_sel(url, sel)
+{
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	} else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+				//sel2 = document.getElementById("id_input_kba");
+				//sel2.value = xmlhttp.responseText;
+				sel.innerHTML=xmlhttp.responseText;
+				send_change_event(document, sel);
+				/*
+				if(xmlhttp.responseText == '')
+					show_content("pa_id", value);	
+				else
+					send_change_event(document, sel);
+				*/
+			}else{
+				if(xmlhttp.status=='0')
+					sel.innerHTML="Please wait...";
+				else
+					sel.innerHTML=xmlhttp.status+xmlhttp.responseText;
+			}
+	};
+	xmlhttp.open("GET",url,true);
+	xmlhttp.send();
+}
+
+
 function _load_url(url, behaviour, div, message, new_url, div_err, byid, nook, callback)
 {
 	if(typeof byid === 'undefined') byid = false;
