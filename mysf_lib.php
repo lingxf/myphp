@@ -68,6 +68,20 @@ function get_team_id($lead)
 		return 0;
 }
 
+function get_team_leadalias($team_id)
+{
+	if(is_numeric($team_id))	
+		$sql = " select * from user.leads where team_id = '$team_id'";
+	else
+		$sql = " select * from user.leads where team_name = '$team_id'";
+		$res = read_mysql_query($sql);
+		while($row = mysql_fetch_array($res)){
+			$lead = $row['user_id'];
+			return $lead;
+		}
+		return 0;
+}
+
 
 function get_my_team($login_id)
 {
