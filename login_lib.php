@@ -2,9 +2,9 @@
 /*
    copyright Xiaofeng(Daniel) Ling<lingxf@gmail.com>, 2016, Aug.
  */
-set_include_path("../:../report:../report/myphp");
-include 'debug.php';
-include_once 'db_connect.php';
+#set_include_path("../:../report:../report/myphp");
+//include 'debug.php';
+//include_once 'db_connect.php';
 include_once 'common.php';
 
 global $user_table;
@@ -56,20 +56,37 @@ function check_passwd($login_id, $login_passwd, &$permit)
 
 function show_login($page)
 {
-	print(" <html>
-			<Title>Login</Title>
-			");
+	print_js_login();
 	print("
 			<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
-			Login Name: <input name=\"user\" value=\"\" /><br>
+			Login Name: <input id='id_user' name=\"user\" value=\"\" /><br>
 			<input id='id_url' name=\"url\" type='hidden' value=\"$page\" />
-			Password:&nbsp;&nbsp;&nbsp;   <input name=\"password\" type=\"password\"/><br>
-			<input type=\"submit\" name=\"login\" value=\"Login\" />
+			Password:&nbsp;&nbsp;&nbsp;   <input id='id_password' name=\"password\" type=\"password\"/><br>
+			<input type=\"button\" name=\"login\" value=\"Login\" onchange='do_login(\"$page\")' onclick='do_login(\"$page\")' />
 			<input type=\"submit\" name=\"show_register\" value=\"Register\" />
 			<input type=\"submit\" name=\"show_forget\" value=\"Forget\" />
 			</form>
 			For China CE team, account already setup, default Login Name is Windows ID and password is your employee number
 			");
+}
+
+function print_js_login()
+{
+	print("
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<meta http-equiv='Content-Language' content='zh-CN' /> 
+	<script type='text/javascript'>
+	function do_login(page)
+	{
+		user_id = document.getElementById('id_user').value;
+		password = document.getElementById('id_password').value;
+		url = 'action_stub.php?action=login&user_id='+user_id+'&password='+password;
+		load_url_reload(url, page, '');
+	}
+	document.title = 'Login';
+	</script>
+	");
+	include 'common_js.php';
 }
 
 function print_js_changepwd()
@@ -86,7 +103,7 @@ function print_js_changepwd()
 			alert('两次密码不一致辞');
 			return false;
 		}
-		url = 'myphp/login_lib.php?action=do_changepwd&user_id=$login_id'+'&password='+old_password+'&new_password='+password1;
+		url = 'action_stub.php?action=do_changepwd&user_id=$login_id'+'&password='+old_password+'&new_password='+password1;
 		load_url_reload(url, '', '');
 	}
 	</script>
@@ -113,7 +130,7 @@ function show_changepwd_ui()
 	print_button("更改", 'bt_change', 'do_changepwd()');
 }
 
-function show_register($page='login_lib.php',$readonly = 'readonly')
+function show_register($page='action_stub.php',$readonly = 'readonly')
 {
 	print("<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
 			ID: <input name=\"user\" value=\"\" onkeyup=\"document.getElementById('id_email').value=this.value + '@qti.qualcomm.com';\"><br>
@@ -128,7 +145,7 @@ function show_register($page='login_lib.php',$readonly = 'readonly')
 //			<input type=\"submit\" name=\"register\" onclick=\"javascript:getElementById('id_url').value = window.location.href\" value=\"Register\" />
 }
 
-function show_reset_password($user, $page='login_lib.php')
+function show_reset_password($user, $page='action_stub.php')
 {
 	print("<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
 			ID: <input name=\"user\" value=\"$user\" /><br>
@@ -139,7 +156,7 @@ function show_reset_password($user, $page='login_lib.php')
 			</form> ");
 }
 
-function show_forget($page='login_lib.php')
+function show_forget($page='action_stub.php')
 {
 	print("<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
 			ID: <input name=\"user\" value=\"\" /><br>
@@ -184,7 +201,7 @@ function home_link($url="/")
 	print("<a href='$url'>Home</a>");	
 }
 
-function check_login($session_name, $exit_nologin=false)
+function check_login($session_name='mysf', $exit_nologin=false)
 {
 	global $login_id;
 
@@ -215,15 +232,17 @@ function check_login($session_name, $exit_nologin=false)
 	
 		}
 	}else if(isset($_POST['register'])){
-		header("Location: login_lib.php?action=register");
+		header("Location: action_stub.php?action=register");
 		exit;
 	}else if(isset($_SESSION['user'])){
 		$user=$_SESSION['user'];
 		if($user != '')
 			$login_id = $user;
+		else
+			$login_id = 'guest';
 	}else{
 		if($exit_nologin){
-			header("Location: login_lib.php?action=login");
+			header("Location: action_stub.php?action=login");
 			exit;
 		}
 		$login_id = 'guest';
@@ -235,152 +254,10 @@ function log_out($url)
 	$_SESSION = array();
 	session_destroy();
 	print("Logout Successful!");
-	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",1000);</script>");
+	//print("<script type=\"text/javascript\">setTimeout(\"window.location.reload();\",1000);</script>");
+	print("<script type=\"text/javascript\">setTimeout(\"window.location.href=$url;\",1000);</script>");
 //	header("Location: $url");
 
 }
 
-$action = '';
-if(isset($_GET['action'])){
-	$action = $_GET['action'];
-	$web_name = isset($_GET['web']) ? $_GET['web']:$web_name;
-	if(session_name() != $web_name){
-		session_name($web_name);
-		session_start();
-	}
-}
-
-if($action == 'login')
-{
-	if(!isset($home_page))
-		$home_page = 'home.php';
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	show_login($url);
-	exit();
-}else if($action == 'logout') {
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	log_out($url);
-	exit();
-}else if($action == 'register') {
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	show_register($url, '');
-	exit();
-}else if($action == 'show_changepwd'){
-	show_changepwd_ui();
-}else if($action == 'do_changepwd'){
-	$user_id = get_url_var('user_id', 'guest');
-	$password = get_url_var('password', '*');
-	$new_password = get_url_var('new_password', '*');
-	$permit = 0;
-	if(check_passwd($user_id, $password, $permit) === 0){
-		$passwd = password_hash($new_password,PASSWORD_DEFAULT);
-		$sql = "update $user_table set password = '$passwd' where user_id = '$user_id' ";
-		$res = update_mysql_query($sql);
-		print('ok修改密码成功！');
-	}else{
-		print("旧密码错误");
-	}
-}else if(isset($_GET['reset_id'])) {
-	$sid= $_GET['reset_id'];
-	$user = $_GET['user'];
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	$sql = "select * from user.user where user_id = '$user' and sid = $sid";
-	$res = read_mysql_query($sql);
-	if(mysql_fetch_array($res)){
-		print("please reset password $url\n");
-		show_reset_password($user, $url);
-	}else
-		print("does not found user $user");
-	exit();
-}else if(isset($_GET['activate'])) {
-	$sid= $_GET['activate'];
-	$user = $_GET['user'];
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	$sql = "update user.user set activate = 1 where user_id = '$user' and sid = $sid";
-	$res=mysql_query($sql) or die("Query Error:".$sql . mysql_error());
-	print("activing $user $sql<br>"); 
-	$rows = mysql_affected_rows();
-	if($rows > 0 ){
-		print "$user activate successfully!";
-		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",10000);</script>");
-	}else
-		print "$user activate fail!";
-	exit();
-}else if(isset($_POST['reset_password'])) {
-	if(isset($_POST['password1']))
-		$ps1 = $_POST['password1'];
-	if(isset($_POST['password2']))
-		$ps2 = $_POST['password2'];
-	$user = $_POST['user'];
-	$url = $_POST['url'];
-	if($ps1 == $ps2)
-	{
-		$sql ="update user.user set password = ENCRYPT('$ps1', 'ab'), activate=1 where user_id = '$user'";
-		$row = update_mysql_query($sql);
-		if($row > 0)
-			print("update new password sucessful");
-		else
-			print("update password sucessful");
-		print $url;
-		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",2000);</script>");
-	}else{
-		print("password miss match<br>");
-		show_reset_password($user, $url);
-	}
-	exit();
-}else if(isset($_POST['show_forget'])) {
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	show_forget($url);
-	exit();
-}else if(isset($_POST['show_register'])) {
-	$url = isset($_GET['url'])?$_GET['url']:$home_page;
-	show_register($url);
-	exit();
-}else if(isset($_POST['forget'])) {
-	handle_forget();
-	exit();
-}else if(isset($_POST['do_register'])) {
-	if(isset($_POST['email']))
-		$email = $_POST['email'];
-	if(isset($_POST['user']))
-		$user = $_POST['user'];
-	if(isset($_POST['name']))
-		$name = $_POST['name'];
-	if(isset($_POST['password1']))
-		$ps1 = $_POST['password1'];
-	if(isset($_POST['password2']))
-		$ps2 = $_POST['password2'];
-	$url = $_POST['url'];
-	$mail_url = get_cur_root()."/$url";
-	if($ps1 == $ps2)
-	{
-		$sql="SELECT * FROM user.user WHERE user_id = '$user'";
-		$sid = mt_rand();
-		$sql_ins="INSERT into user.user set user_id = '$user', name = '$name', email = '$email', password = ENCRYPT('$ps1', 'ab'), sid = $sid ;";
-		$res=mysql_query($sql) or die("Query Error:".$sql . mysql_error());
-		$row=mysql_fetch_array($res);
-		if($row){
-			print "$user already registered";
-		}else{
-			$res=mysql_query($sql_ins) or die("Query Error:".$sql_ins . mysql_error());
-			$row=mysql_affected_rows($link);
-			print "$user is created successful<br>";
-			$message = "
-				<html>
-				<head>
-				<title>Activate</title>
-				<body>
-				";
-			$message .= "Please click <a href=$mail_url?user=$user&activate=$sid>here</a> to activate your account";
-			$message .= " </body> </html> ";
-			mail_html($email, '', "$user activate mail", $message);
-			print "mail to $email for activate, please click the link in the mail<br>";
-			print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",5000);</script>");
-		}
-	}else{
-		print("2 Password not match!");
-		show_register($url);
-	}
-	exit();
-}
 ?>
