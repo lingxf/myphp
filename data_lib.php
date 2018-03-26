@@ -648,8 +648,9 @@ function list_data_simple($name, $sql='', $width=0, $start='', $perpage=25, $cal
 	print("&nbsp;$start-$end/$total");
 	$sql = "$sql limit $start, $perpage";
 	if($callback == '')
-		$callback = 'data_callback';
-	$callback = get_persist_var('callback_'.$name, $callback);
+		$callback = get_persist_var('callback_'.$name, 'data_callback');
+	else
+		$_SESSION['callback_'.$name] = $callback;
 	$format = 1;
 	show_table_by_sql("tb_".$name, '', $width, $sql, array(), array(), $callback, $format);
 }
