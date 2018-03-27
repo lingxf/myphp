@@ -25,6 +25,7 @@ if($action == 'login'){
 	if(check_passwd($user_id, $password, $permit) === 0){
 		$_SESSION['login_id'] = $user_id;
 		$_SESSION['user_id'] = $user_id;
+		$_SESSION['user'] = $user_id;
 		$_SESSION['permit'] = $permit;
 		print('ok');
 	}else{
