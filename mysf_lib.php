@@ -489,7 +489,9 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 					foreach($team as $own){
 						$cond .= " or $field_name = '$own' ";
 					}
-
+				}else if($scope == 6){
+					$team_id = get_team_id($au);
+					$cond .= " or owner_team = '$team_id' ";
 				}
 			}
 		}
