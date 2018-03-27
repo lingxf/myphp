@@ -255,7 +255,7 @@ function log_out($url)
 	session_destroy();
 	print("Logout Successful!");
 	//print("<script type=\"text/javascript\">setTimeout(\"window.location.reload();\",1000);</script>");
-	print("<script type=\"text/javascript\">setTimeout(\"window.location.href=$url;\",1000);</script>");
+	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url';\",1000);</script>");
 //	header("Location: $url");
 
 }
