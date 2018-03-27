@@ -61,8 +61,8 @@ function show_login($page)
 			<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
 			Login Name: <input id='id_user' name=\"user\" value=\"\" /><br>
 			<input id='id_url' name=\"url\" type='hidden' value=\"$page\" />
-			Password:&nbsp;&nbsp;&nbsp;   <input id='id_password' name=\"password\" type=\"password\"/><br>
-			<input type=\"button\" name=\"login\" value=\"Login\" onchange='do_login(\"$page\")' onclick='do_login(\"$page\")' />
+			Password:&nbsp;&nbsp;&nbsp;   <input id='id_password' onchange='do_login(\"$page\")' name=\"password\" type=\"password\"/><br>
+			<input type=\"button\" name=\"login\" value=\"Login\" onclick='do_login(\"$page\")' />
 			<input type=\"submit\" name=\"show_register\" value=\"Register\" />
 			<input type=\"submit\" name=\"show_forget\" value=\"Forget\" />
 			</form>

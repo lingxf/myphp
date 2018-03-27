@@ -11,6 +11,111 @@ function dprint($format)
 	if($debug_print == 1 || $debug == 1)
 		print($format);
 }
+
+function get_now(){
+	$time = time();
+	return  strftime("%F %T", $time);
+//	return  strftime("%Y-%m-%d %H:%M:%S", $time);
+}
+
+function get_now_date(){
+	$time = time();
+	return  strftime("%Y-%m-%d", $time);
+}
+
+function get_now_time(){
+	$time = time();
+	return  strftime("%H:%M:%S", $time);
+}
+
+function get_current_monday(){
+	$t = time();
+	return get_monday_by_time($t);
+}
+
+function get_last_monday(){
+	$t = time();
+	$t -= 60*60*24*7;
+	return get_monday_by_time($t);
+}
+
+function get_last2_monday(){
+	$t = time();
+	$t -= 2*60*60*24*7;
+	return get_monday_by_time($t);
+}
+
+function get_monday_by_date($date){
+	$tm = strtotime($date);
+	return get_monday_by_time($tm);
+}
+
+function get_before_nhour($d){
+	$now = time();
+	$target = $now - $d*60*60;
+	$date = getdate($target);
+	return  strftime("%F %T", $target);
+}
+
+function get_last_weekday($d){
+	$now = time();
+	$date = getdate($now);
+	$w = $date["wday"];
+	$diff = $d <= $w ? $d + 7 - $w : $d - $w;
+	$target = $now - $diff*24*60*60;
+	$date = getdate($target);
+	$time = mktime(0,0,0, $date["mon"], $date["mday"], $date["year"]);
+	return  strftime("%Y-%m-%d", $time);
+}
+
+function get_monday_by_time($tm){
+	$date = getdate($tm);
+	$w = $date["wday"];
+	if($w == 0 )
+		$w = 7;
+	$tn = $tm - 60*60*24*($w-1);
+	$date = getdate($tn);
+	$time = mktime(0,0,0, $date["mon"], $date["mday"], $date["year"]);
+	return  strftime("%Y-%m-%d", $time);
+}
+
+function get_yesterday(){
+	$tm = time();
+	$tm -= 60*60*24*1;
+	$date = getdate($tm);
+	$y = $date['year'];
+	$m = $date['mon'];
+	$d = $date['mday'];
+	return "$y-$m-$d";
+}
+
+function get_today(){
+	$tm = time();
+	$date = getdate($tm);
+	$y = $date['year'];
+	$m = $date['mon'];
+	$d = $date['mday'];
+	return "$y-$m-$d";
+}
+
+function get_current_week(){
+	$weekmon = date("W");
+	return  $weekmon;
+}
+
+
+function get_current_month(){
+	$tm = time();
+	$date = getdate($tm);
+	return  $date['mon'];
+}
+
+function get_current_year(){
+	$tm = time();
+	$date = getdate($tm);
+	return  $date['year'];
+}
+
 function get_client_ip(){
 	if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown"))
 		$ip = getenv("HTTP_CLIENT_IP");
