@@ -458,6 +458,7 @@ scope=
 */
 function get_cond_by_author(&$author, $scope, $field_name='author')
 {
+		global $with_pa;
 		$cond = '';
 		if($author != ''){
 			$authors = explode(',', $author);
@@ -474,11 +475,19 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 				}else if($scope == 2){
 					$cond .= " or $field_name = '$au' or ";
 					$cond .= get_all_subordinate($au, $field_name);
+					if($with_pa === 'true'){
+						$pa_team = get_team_id($au);
+						$cond = " ($cond or  pa_team = $pa_team ) ";	
+					}
 				}else if($scope == 3){
 					if($au == 'dummy')
 						$cond .= " or team_leads is NULL ";
 					else
 						$cond .= " or team_leads = '$au' ";
+					if($with_pa === 'true'){
+						$pa_team = get_team_id($au);
+						$cond = " ($cond or ( pa_team = $pa_team )) ";	
+					}
 				}else if($scope == 4){
 					$team_lead = get_user_prop($au, 'team_leads');
 					$cond .= " or $field_name = '$team_lead' or ";
@@ -495,6 +504,7 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 				}
 			}
 		}
+
 		return $cond;
 }
 
