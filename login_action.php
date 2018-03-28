@@ -31,6 +31,10 @@ if($action == 'login'){
 	}else{
 		print("usre_id or password wrong");
 	}
+}else if($action == 'do_logout') {
+	$_SESSION = array();
+	session_destroy();
+	print("okLogout Successful!");
 }else if($action == 'logout') {
 	$url = isset($_GET['url'])?$_GET['url']:$home_page;
 	log_out($url);
@@ -167,6 +171,6 @@ if($action == 'login'){
 		$user_id = $_SESSION['login_id'];
 		if($user_id != '')
 			$login_id = $user_id;
+		$permit = get_session_var('permit', 1);
 	}
-	$permit = get_session_var('permit', 1);
 }

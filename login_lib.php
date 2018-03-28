@@ -70,6 +70,22 @@ function show_login($page)
 			");
 }
 
+function print_js_logout()
+{
+	print("
+	<script type='text/javascript'>
+	function do_logout()
+	{
+		url = 'action_stub.php?action=do_logout';
+		load_url_reload(url);
+		return false;
+	}
+	</script>
+	");
+	include 'common_js.php';
+}
+
+
 function print_js_login()
 {
 	print("
@@ -255,7 +271,7 @@ function log_out($url)
 	session_destroy();
 	print("Logout Successful!");
 	//print("<script type=\"text/javascript\">setTimeout(\"window.location.reload();\",1000);</script>");
-	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url';\",1000);</script>");
+	print("<script type=\"text/javascript\">setTimeout(\"window.location.href=\'$url\';\",1000);</script>");
 //	header("Location: $url");
 
 }
