@@ -606,7 +606,7 @@ function show_table_by_sql_case($id, $db, $width, $sql, $field_name=array(), $fi
 	print("</table>");
 }
 
-function print_checkbox($text, $width, $id, $value = '', $is_check=0, $call='')
+function print_checkbox($text, $width, $id, $value = '', $is_check=0, $call='', $disabled='')
 {
 	$sc = '';
 	if($call != '')
@@ -616,7 +616,7 @@ function print_checkbox($text, $width, $id, $value = '', $is_check=0, $call='')
 	else
 		$checked = '';
 	//print("$text");
-	print("<input warp='soft' style='width:$width;' type='checkbox' id='$id' $checked $sc value='$value'>$text</input>");
+	print("<input warp='soft' $disabled style='width:$width;' type='checkbox' id='$id' $checked $sc value='$value'>$text</input>");
 
 }
 
