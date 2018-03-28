@@ -411,18 +411,19 @@ function china_ce_lead()
 		$team_id = $row['team_id'];
 		$rows += set_leader($lead, $team_id);	
 	}
-	print("<br>");
 	print("Update total $rows user lead for type 1");
+	print("<br>");
 
+	print("<br>");
 	$rows = 0;
-	$sql = "select * from user.leads where type=3";
+	$sql = "select * from user.leads where type=2";
 	$res = read_mysql_query($sql);
 	while($row = mysql_fetch_array($res)){
 		$lead = $row['user_id'];
 		$rows += set_leader($lead, $team_id, False);	
 	}
+	print("Update total $rows user lead for type 2");
 	print("<br>");
-	print("Update total $rows user lead for type 3");
 
 	print("<br>");
 	$rows = 0;
@@ -433,17 +434,18 @@ function china_ce_lead()
 		$lead = $row['team_leads'];
 		$rows += set_leader_direct($user_id, $lead);	
 	}
-	$rows = set_leader('zhel', 35, false);	
-	$rows = set_leader('xuesongc', 36, false);	
+	//$rows = set_leader('zhel', 35, false);	
+	//$rows = set_leader('xuesongc', 36, false);	
 	$rows = set_leader('xianliu', 1, false);	
 	$rows = set_leader('chechang', 1, false);	
 	$rows = set_leader('xdzhu', 1, false);	
-	
+	print("Update total $rows for exception");	
+	print("<br>");
+
 	$sql = "select distinct user.supervisor as user_id from user.user";
 	$sql = "update user.user a right join ($sql) b on a.user_id = b.user_id set is_supervisor = 1 ";
 	$res = update_mysql_query($sql);
 	$row = mysql_affected_rows();
-	print("<br>");
 	print("Update is_supervisor $row line");
 }
 
@@ -456,7 +458,7 @@ scope=
 4 team author belong to
 5 manual sub_leads to author
 */
-function get_cond_by_author(&$author, $scope, $field_name='author')
+function get_cond_by_author(&$author, $scope, $field_name='author', $check_pa=true)
 {
 		global $with_pa;
 		$cond = '';
@@ -475,7 +477,7 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 				}else if($scope == 2){
 					$cond .= " or $field_name = '$au' or ";
 					$cond .= get_all_subordinate($au, $field_name);
-					if($with_pa === 'true'){
+					if($check_pa && $with_pa === 'true'){
 						$pa_team = get_team_id($au);
 						$cond = " ($cond or  pa_team = $pa_team ) ";	
 					}
@@ -484,7 +486,7 @@ function get_cond_by_author(&$author, $scope, $field_name='author')
 						$cond .= " or team_leads is NULL ";
 					else
 						$cond .= " or team_leads = '$au' ";
-					if($with_pa === 'true'){
+					if($check_pa && $with_pa === 'true'){
 						$pa_team = get_team_id($au);
 						$cond = " ($cond or ( pa_team = $pa_team )) ";	
 					}
