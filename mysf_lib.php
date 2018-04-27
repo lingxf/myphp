@@ -93,16 +93,24 @@ function get_team_leadalias($team_id)
 		return 0;
 }
 
-
-function get_my_team($login_id)
+function get_myteam_id($login_id, &$team_leads = null)
 {
 		$sql = " select * from user.user where user_id = '$login_id'";
 		$res = read_mysql_query($sql);
 		while($row = mysql_fetch_array($res)){
 			$team_leads= $row['team_leads'];
-			return $team_leads;
+			$team_id = $row['team_id'];
+			return $team_id;
 		}
 		return '';
+}
+
+
+function get_my_team($login_id)
+{
+	$team_lead = '';
+	$team_id = get_myteam_id($login_id, $team_lead);
+	return $team_lead;
 }
 
 function show_3pa_select($pa_id=0x10101, $mode=0)

@@ -637,7 +637,7 @@ function print_input_area($text, $width, $line, $id, $value='', $call='')
 	print("<textarea warp='soft' style='width:$width; padding: 2px; border: 1px solid black' type='textarea' rows='$line' maxlength='2000' cols='280' id='$id' value='$value' $sc ></textarea>");
 }
 
-function print_input_ext($text, $width, $id, $value='', $sc)
+function print_input_ext($text, $width, $id, $value='', $sc='')
 {
 	$width .= 'px';
 	print("$text<input style='width:$width; padding: 2px; border: 1px solid black' type='textbox' id='$id' value='$value' $sc ></input>&nbsp;");
