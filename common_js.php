@@ -161,6 +161,14 @@ function load_url_sync(url, div)
 	document.getElementById(div).innerHTML = rtext;
 }
 
+function call_action(action, div, sc)
+{
+	if(typeof div === 'undefined') div = '';
+	if(typeof sc === 'undefined') sc = 'action_stub.php';
+	url = sc+"?action="+action;
+	load_url(url, div); 
+}
+
 function ajaxFunction()
 {
 	alert('ajax');

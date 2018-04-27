@@ -341,6 +341,56 @@ function get_tb_fields($db, $tbname)
 	return $field_names;
 }
 
+function set_db_column($tb, $field, $value, $cond){
+	$sql = " update $tb set `$field` = $value where $cond ";
+	$res = update_mysql_query($sql);
+	$row = mysql_affected_rows();
+	return $row;
+}
+
+function set_db_columns($tb, $set, $cond){
+	$sql = " update $tb set $set where $cond ";
+	$res = update_mysql_query($sql);
+	$row = mysql_affected_rows();
+	return $row;
+}
+function get_db_columns($tb, $cond){
+
+	$sql = " select * from $tb where $cond ";
+	$res = read_mysql_query($sql);
+	if($row = mysql_fetch_array($res)){
+		return $row;
+	}
+	return false;
+}
+
+
+function get_db_column($tb, $field, $cond){
+
+	$sql = " select * from $tb where $cond ";
+	$res = read_mysql_query($sql);
+	if($row = mysql_fetch_array($res)){
+		return $row[$field];
+	}
+	return '';
+}
+
+
+function alloc_auto_id($name, $tb = 'param')
+{
+	$sql = "select next_id from $tb where id_name = '$name'";	
+	$res = read_mysql_query($sql);
+	if(($row = mysql_fetch_array($res))){
+		$id = $row[0];
+		$sql = "update $tb set next_id = next_id + 1 where id_name = '$name'";	
+	}else{
+		$id = 1;
+		$sql = "insert into $tb set next_id = 2, id_name = '$name'";	
+	}
+	$res = update_mysql_query($sql);
+	return $id;
+}
+
 function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0, $extra_cond='')
 {
 	$tables = array();
