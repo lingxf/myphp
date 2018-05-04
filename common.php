@@ -50,6 +50,23 @@ function get_monday_by_date($date){
 	return get_monday_by_time($tm);
 }
 
+function get_last_nday($nday){
+	$time = time();
+	$time -= $nday * 24 * 60 * 60;
+	return  strftime("%Y-%m-%d", $time);
+}
+
+function date_before($date1, $date2){
+	$tm1 = strtotime($date1);
+	$tm2 = strtotime($date2);
+	if($tm1 < $tm2)
+		return 1;
+	if($tm1 = $tm2)
+		return 0;
+	if($tm1 > $tm2)
+		return -1;
+}
+
 function get_before_nhour($d){
 	$now = time();
 	$target = $now - $d*60*60;
