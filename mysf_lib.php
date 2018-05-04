@@ -102,7 +102,7 @@ function get_myteam_id($login_id, &$team_leads = null)
 			$team_id = $row['team_id'];
 			return $team_id;
 		}
-		return '';
+		return 0;
 }
 
 
