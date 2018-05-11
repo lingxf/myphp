@@ -210,14 +210,19 @@ function delay_back($url, $msec=1000)
 	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",$msec);</script>");
 }
 
-function mail_html($to, $cc, $subject, $message)
+function mail_html($to, $cc, $subject, $message, $from='')
 {
 	global $debug_mail, $debug;
-	$headers = 'From: book@cedump-sh.ap.qualcomm.com' . "\r\n" .
-	    'Reply-To: xling@qti.qualcomm.com' . "\r\n" .
-	    'X-Mailer: PHP/' . phpversion();
-	$headers  = 'MIME-Version: 1.0' . "\r\n";
+	if($from == '')
+		$headers = 'From: cedump@cedump-sh.ap.qualcomm.com' . "\r\n";
+	else
+		$headers = "From: $from" . "\r\n";
+
+	$headers .= 'Reply-To: xling@qti.qualcomm.com' . "\r\n" .
+	    'X-Mailer: PHP/' . phpversion() . "\r\n";
+	$headers .= 'MIME-Version: 1.0' . "\r\n";
 	$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+	$headers .= 'Content-Transfer-Encoding: 8bit' . "\r\n";
 	if($debug == 1){
 		$message .= "\r\n To:$to, CC:$cc";
 		$cc = 'xling@qti.qualcomm.com';
@@ -227,9 +232,8 @@ function mail_html($to, $cc, $subject, $message)
 		$headers .= "Cc: $cc" . "\r\n";
 	if(isset($debug_mail) && $debug_mail == 1)
 		$headers .= "Bcc: xling@qti.qualcomm.com" . "\r\n";
-
+	//$message = "=?UTF-8?B?".base64_encode($message)."?=";
 	dprint("mail|to:$to|cc:$cc|". htmlentities($subject, ENT_COMPAT, 'utf-8') . "<br>\n");
-//	print("$message\n");
 	mail($to,$subject, $message, $headers);
 
 }
