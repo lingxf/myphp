@@ -214,7 +214,7 @@ function mail_html($to, $cc, $subject, $message, $from='')
 {
 	global $debug_mail, $debug;
 	if($from == '')
-		$headers = 'From: cedump@cedump-sh.ap.qualcomm.com' . "\r\n";
+		$headers = 'From: ceauto@cedump-sh.ap.qualcomm.com' . "\r\n";
 	else
 		$headers = "From: $from" . "\r\n";
 
