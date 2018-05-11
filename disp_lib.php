@@ -240,6 +240,7 @@ function show_table_by_sql($id, $db, $width, $sql, $field_name=array(), $field_w
 		print("</tr>");
 	}
 	print("</table>");
+	return $maxrow;
 }
 
 /*
