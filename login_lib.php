@@ -65,9 +65,8 @@ function show_login($page)
 			<input type=\"button\" name=\"login\" value=\"Login\" onclick='do_login(\"$page\")' />
 			<input type=\"submit\" name=\"show_register\" value=\"Register\" />
 			<input type=\"submit\" name=\"show_forget\" value=\"Forget\" />
-			</form>
-			For China CE team, account already setup, default Login Name is Windows ID and password is your employee number
-			");
+			</form> If you are China CE and never login or forget password, please click \"Forget\" and input your Windows id and qualcomm email, it will send reset link to your qualcomm email<br>
+			For others, please click Register first");
 }
 
 function print_js_logout()
