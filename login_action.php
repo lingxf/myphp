@@ -68,7 +68,7 @@ if($action == 'login'){
 		print("please reset password \n");
 		show_reset_password($user, $url);
 	}else
-		print("does not found user $user");
+		print("does not found user $user or the reset link is out of date");
 	exit();
 }else if(isset($_GET['activate'])) {
 	$sid= $_GET['activate'];
