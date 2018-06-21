@@ -412,7 +412,7 @@ function alloc_auto_id($name, $tb = 'param')
 	return $id;
 }
 
-function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0, $extra_cond='')
+function import_excel_kba($import_file, $db, $tbname, $key, $trans_array, $more='', $time='', $limit=0, $extra_cond='')
 {
 	$tables = array();
 	$col_names = array();
@@ -604,6 +604,175 @@ function import_excel_file($import_file, $db, $tbname, $key, $trans_array, $more
 		unset($rows);
 		unset($tempRow);
 
+	}
+	return $incount;
+}
+
+/*
+function callback(&$colname, &$cell, $row)
+{
+	if($colname == 'a'){
+		$colname = 'b';
+		$cell = $cell;
+		return true;
+	}
+	return false;
+}
+*/
+function import_excel_file($import_file, $db, $tbname, $key, $callback='')
+{
+	$tables = array();
+	$col_names = array();
+	$limit = 0;
+
+	$table_fields = get_tb_fields($db, $tbname);
+
+	if(substr_count($import_file, '.xlsx') || substr_count($import_file, '.xlsm') ){
+		$xlsx = true;
+		print "  --  xlsx file<br>\n";
+	} else {
+		$xlsx = false;
+		print " -- old xls file<br>\n";
+	}
+
+	/* Append the PHPExcel directory to the include path variable */
+	set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . '/PHPExcel/');
+	require_once 'PHPExcel/PHPExcel.php';
+	if($xlsx){
+		require_once 'PHPExcel/PHPExcel/Reader/Excel2007.php';
+		$objReader = new PHPExcel_Reader_Excel2007();
+	}else{
+		require_once 'PHPExcel/PHPExcel/Reader/Excel5.php';
+		$objReader = new PHPExcel_Reader_Excel5();
+	}
+
+	$objReader->setReadDataOnly(true);
+	$objReader->setLoadAllSheets();
+	$objPHPExcel = $objReader->load($import_file);
+	
+	$sheet_names = $objPHPExcel->getSheetNames();
+	$num_sheets = count($sheet_names);
+	$sheet_names[0] = $tbname;
+	
+	$num_sheets = 1;
+
+	$s = 0;
+
+    $current_sheet = $objPHPExcel->getSheet($s);
+    
+    $num_rows = $current_sheet->getHighestRow();
+    $num_cols = excel_get_column($current_sheet->getHighestColumn());
+   	print "excel line x col : $num_rows x $num_cols<br>\n"; 
+	$url = "";
+	$begin_rol = 1;
+	if($num_cols == 1 || $num_cols == 2){
+		$num_cols = 50;
+	}
+
+    $cellobj = $current_sheet->getCellByColumnAndRow(0, 1);
+    $cell = $current_sheet->getCellByColumnAndRow(0, 1)->getCalculatedValue();
+	$update = 0;
+	$duplicate = 0;
+	$new = 0;
+	$incount = 0;
+	flush();
+    if ($num_rows != 1 && $num_cols != 0) {
+        for ($r = $begin_rol; $r <= $num_rows; ++$r) {
+            $tempRow = array();
+			$rows = array()	;
+            for ($c = 0; $c < $num_cols; ++$c) {
+                $cellobj = $current_sheet->getCellByColumnAndRow($c, $r);
+                $cell = $current_sheet->getCellByColumnAndRow($c, $r)->getCalculatedValue();
+                if (! strcmp($cell, '')) {
+					if($r == 1){
+						$num_cols = $c;
+						break;
+					}
+                    $cell = 'NULL';
+                }
+                $tempRow[] = $cell;
+            }
+			if($r==$begin_rol){
+				$colnames = $tempRow; 
+				foreach($colnames as $colname){
+					$oldcolname = $colname;
+					$cell = '';
+					if($callback != '' && !$callback($colname, $cell, $rows)){
+						print("Skip column: $oldcolname<br>\n");
+						continue;
+					}
+					if(!in_array($colname, $table_fields))
+						print("Skip no exist field: $colname<br>\n");
+				}
+				flush();
+			}else{
+				$sql_cmd = "insert into $tbname set ";
+				$sql = "";
+				$i = 0;
+				$emptyline = false;
+				$owner = false;
+				$onwer_email = false;
+				$status = '';
+				$rev = 0;
+				#print "$tempRow[$i],$tempRow[3]<br>";
+				$first = 0;
+				foreach($colnames as $colname){
+					$cell = $tempRow[$i];
+					$i += 1;
+					if($colname == $key)
+						$keyvalue = $cell;
+					if($callback != ''){
+						if(!$callback($colname, $cell, $rows)){
+							//print("Skip database field: $colname<br>\n");
+							continue;
+						}
+					}
+					$rows[$colname] = $cell;	
+					//dprint("$colname:$cell<br>");
+					$cell = str_replace("'", "''", $cell);
+					$cell = str_replace("\\", "\\\\", $cell);
+					if($first == 0)
+						$sql .= " `$colname` = '$cell' " ;
+					else
+						$sql .= " , `$colname` = '$cell' " ;
+					$first++;
+				}
+				if($emptyline){
+					//print "skip empty line<br>\n";
+					$emptyline = false;
+				}else{
+					$sql_insert = $sql_cmd . $sql;
+					$res1=mysql_query($sql_insert);
+					if(!$res1)
+					{
+						$sql_replace = "update $tbname set " . $sql." where `$key` = '$keyvalue'";
+						$res=update_mysql_query($sql_replace);
+						$up = mysql_affected_rows();
+						$update += $up/2;
+						$duplicate++;
+					}else{
+						$new++;
+					};
+					$incount++;
+                    if($limit != 0 && $r > $limit){
+						print("exceed limit=$limit line\n");
+                        break;
+                    }
+					if(($r % 1000) == 0){
+						print("Done $r line<br>\n");
+						flush();
+					}
+				}
+			}
+            $rows[] = $tempRow;
+        }
+		print("New: $new  Duplicate: $duplicate  Update: $update");
+        $tables[] = array($sheet_names[$s], $col_names, $rows);
+ 		$done = true;       
+		unset($objPHPExcel);
+		unset($objReader);
+		unset($rows);
+		unset($tempRow);
 	}
 	return $incount;
 }
