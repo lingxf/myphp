@@ -201,8 +201,8 @@ function handle_forget()
 		$sql="update user.user set sid=$sid WHERE email = '$email'";
 		update_mysql_query($sql);
 		$message = "Please click <a href=$mail_url?user=$user&reset_id=$sid>here</a> to reset your password";
-		//mail_html($email, '', "$user reset mail", $message);
-		mail_html('xling@qti.qualcomm.com', '', "$user reset mail", $message);
+		mail_html($email, '', "$user reset mail", $message);
+		//mail_html('xling@qti.qualcomm.com', '', "$user reset mail", $message);
 		print("mail to $email to reset password, please click link in the email");
 		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",3000);</script>");
 		return;
