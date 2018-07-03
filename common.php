@@ -210,15 +210,16 @@ function delay_back($url, $msec=1000)
 	print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",$msec);</script>");
 }
 
-function mail_html($to, $cc, $subject, $message, $from='')
+function mail_html($to, $cc, $subject, $message, $from='', $reply='')
 {
 	global $debug_mail, $debug;
 	if($from == '')
 		$headers = 'From: ceauto@cedump-sh.ap.qualcomm.com' . "\r\n";
 	else
 		$headers = "From: $from" . "\r\n";
-
-	$headers .= 'Reply-To: xling@qti.qualcomm.com' . "\r\n" .
+	if($reply == '')
+		$reply = 'xling@qti.qualcomm.com';
+	$headers .= "Reply-To: $reply" . "\r\n" .
 	    'X-Mailer: PHP/' . phpversion() . "\r\n";
 	$headers .= 'MIME-Version: 1.0' . "\r\n";
 	$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
