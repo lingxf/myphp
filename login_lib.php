@@ -189,6 +189,7 @@ function handle_forget()
 		$user = $_POST['user'];
 	$url = $_POST['url'];
 	$mail_url = get_cur_root()."/$url";
+	$mail_url = $url;
 	
 	$sql="SELECT * FROM user.user WHERE email = '$email'";
 	$res=read_mysql_query($sql);
