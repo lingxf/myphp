@@ -59,7 +59,7 @@ function show_login($page)
 	print_js_login();
 	print("
 			<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
-			Login Name: <input id='id_user' name=\"user\" value=\"\" /><br>
+			Login Name: <input id='id_user'  name=\"user\" value=\"\" /><br>
 			<input id='id_url' name=\"url\" type='hidden' value=\"$page\" />
 			Password:&nbsp;&nbsp;&nbsp;   <input id='id_password' onchange='do_login(\"$page\")' name=\"password\" type=\"password\"/><br>
 			<input type=\"button\" name=\"login\" value=\"Login\" onclick='do_login(\"$page\")' />
@@ -174,8 +174,8 @@ function show_reset_password($user, $page='action_stub.php')
 function show_forget($page='action_stub.php')
 {
 	print("<form enctype=\"multipart/form-data\" action=\"$page\" method=\"POST\">
-			ID: <input name=\"user\" value=\"\" /><br>
-			Email: <input name=\"email\" value=\"\" /><br>
+			ID: <input name=\"user\" onkeyup=\"document.getElementById('id_email').value=this.value + '@qti.qualcomm.com';\" value=\"\" /><br>
+			Email: <input id='id_email' name=\"email\" value=\"\" /><br>
 			<input id='id_url' name=\"url\" type='hidden' value=\"\" />
 			<input type=\"submit\" name=\"forget\" onclick=\"javascript:getElementById('id_url').value =  'http://' + window.location.host+window.location.pathname\" value=\"Reset Password\" />
 			</form> ");
@@ -188,8 +188,7 @@ function handle_forget()
 	if(isset($_POST['user']))
 		$user = $_POST['user'];
 	$url = $_POST['url'];
-//	$mail_url = get_cur_root()."/$url";
-	$mail_url = $url;
+	$mail_url = get_cur_root()."/$url";
 	
 	$sql="SELECT * FROM user.user WHERE email = '$email'";
 	$res=read_mysql_query($sql);
@@ -202,7 +201,8 @@ function handle_forget()
 		$sql="update user.user set sid=$sid WHERE email = '$email'";
 		update_mysql_query($sql);
 		$message = "Please click <a href=$mail_url?user=$user&reset_id=$sid>here</a> to reset your password";
-		mail_html($email, '', "$user reset mail", $message);
+		//mail_html($email, '', "$user reset mail", $message);
+		mail_html('xling@qti.qualcomm.com', '', "$user reset mail", $message);
 		print("mail to $email to reset password, please click link in the email");
 		print("<script type=\"text/javascript\">setTimeout(\"window.location.href='$url'\",3000);</script>");
 		return;
