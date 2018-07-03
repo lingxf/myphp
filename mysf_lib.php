@@ -249,7 +249,7 @@ function get_pa_id($pa1, $pa2 = "", $pa3 = "")
 		if(count($id_array) >= 1)
 			foreach($id_array as $id3){
 				if($id1 == ($id3 & 0xff0000) && $id2 = ($id3 & 0xffff00)){
-					dprintf("id:%x:%x:%x<br>", $id1, $id2, $id3);
+					//dprintf("id:%x:%x:%x<br>", $id1, $id2, $id3);
 					return $id3;
 				}
 			}
@@ -320,14 +320,20 @@ function get_pa_by_id($pa_id, $type=0)
 	$sql = "select * from pa where `pa_id` = $pa_id or `pa_id` = ( $pa_id & 0xff0000) or `pa_id` = ( $pa_id & 0xffff00) ";
 	$res=read_mysql_query($sql);
 	$text = '';
-	while($row = mysql_fetch_array($res)){
+	if($row = mysql_fetch_array($res)){
 		$id = $row['pa_id'];
 		if($id == ($pa_id & 0xff0000))
 			$text .= '"pa1":"' . $row['text'] . '",';
 		if($id == ($pa_id & 0xffff00))
 			$text .= '"pa2":"' . $row['text'] . '",';
+		else
+			$text .= '"pa2":"common",';
 		if($id == $pa_id)
 			$text .= '"pa3":"' . strip($row['text']) . '",';
+		else
+			$text .= '"pa3":"common",';
+	}else{
+		$text = '"pa1":"","pa2":"", "pa3":""';
 	}
 	return $text;
 }
