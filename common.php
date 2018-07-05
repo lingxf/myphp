@@ -96,6 +96,16 @@ function get_monday_by_time($tm){
 	return  strftime("%Y-%m-%d", $time);
 }
 
+function get_tomorrow(){
+	$tm = time();
+	$tm += 60*60*24*1;
+	$date = getdate($tm);
+	$y = $date['year'];
+	$m = $date['mon'];
+	$d = $date['mday'];
+	return "$y-$m-$d";
+}
+
 function get_yesterday(){
 	$tm = time();
 	$tm -= 60*60*24*1;
