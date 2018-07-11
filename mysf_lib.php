@@ -59,7 +59,7 @@ function get_all_subordinate($uid, $field_name='author')
 
 function get_team_field($lead, $field)
 {
-		$sql = " select * from user.leads where user_id = '$lead'";
+		$sql = " select * from user.teams where lead_id = '$lead'";
 		$res = read_mysql_query($sql);
 		while($row = mysql_fetch_array($res)){
 			$team_id = $row[$field];
@@ -70,7 +70,7 @@ function get_team_field($lead, $field)
 
 function get_team_id($lead)
 {
-		$sql = " select * from user.leads where user_id = '$lead'";
+		$sql = " select * from user.teams where lead_id = '$lead'";
 		$res = read_mysql_query($sql);
 		while($row = mysql_fetch_array($res)){
 			$team_id = $row['team_id'];
@@ -82,9 +82,9 @@ function get_team_id($lead)
 function get_team_leadalias($team_id)
 {
 	if(is_numeric($team_id))	
-		$sql = " select * from user.leads where team_id = '$team_id'";
+		$sql = " select * from user.teams where team_id = '$team_id'";
 	else
-		$sql = " select * from user.leads where team_name = '$team_id'";
+		$sql = " select * from user.teams where team_name = '$team_id'";
 		$res = read_mysql_query($sql);
 		while($row = mysql_fetch_array($res)){
 			$lead = $row['user_id'];
@@ -418,7 +418,7 @@ function china_ce_lead()
 	//$rows = set_leader('xianliu', 0, true);	
 	//$rows = set_leader('chechang', 0, true);	
 	$rows = 0;
-	$sql = "select * from user.leads where type=1";
+	$sql = "select * from user.teams where type=1";
 	$res = read_mysql_query($sql);
 	while($row = mysql_fetch_array($res)){
 		$lead = $row['user_id'];
@@ -430,7 +430,7 @@ function china_ce_lead()
 
 	print("<br>");
 	$rows = 0;
-	$sql = "select * from user.leads where type=2";
+	$sql = "select * from user.teams where type=2";
 	$res = read_mysql_query($sql);
 	while($row = mysql_fetch_array($res)){
 		$lead = $row['user_id'];
